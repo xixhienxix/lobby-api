@@ -16,7 +16,9 @@
         "titleBar.activeBackground": "#ffeead",
         "titleBar.activeForeground": "#15202b",
         "titleBar.inactiveBackground": "#ffeead99",
-        "titleBar.inactiveForeground": "#15202b99"
+        "titleBar.inactiveForeground": "#15202b99",
+        "typescript.validate.enable": true,
+        "typescript.tsserver.experimental.enableProjectDiagnostics": true
     },
     "peacock.color": "#ffeead"
 }

@@ -8,7 +8,15 @@ import { environment } from './environments/environment';
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forRoot(environment.MONGODB_CONNECTION_URL),
+    MongooseModule.forRoot(environment.MONGODB_CONNECTION_URL, {
+      connectionFactory: (connection) => {
+        connection.on('connected', () => {
+          console.log('Connected to MongoDB');
+        });
+        connection._events.connected();
+        return connection;
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

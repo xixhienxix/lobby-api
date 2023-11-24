@@ -1,14 +1,24 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 
-export const userInfo = new mongoose.Schema(
-  {
-    username: String,
-    password: String,
-    nombre: String,
-    email: String,
-    terminos: Boolean,
-    rol: Number,
-    hotel: String,
-  },
-  { collection: 'usuarios' },
-);
+export type UserDocument = mongoose.HydratedDocument<usuario>;
+
+@Schema()
+export class usuario {
+  @Prop()
+  username: string;
+  @Prop()
+  passwordHash: string;
+  @Prop()
+  nombre: string;
+  @Prop()
+  email: string;
+  @Prop()
+  terminos: boolean;
+  @Prop()
+  rol: number;
+  @Prop()
+  hotel: string;
+}
+
+export const UserSchema = SchemaFactory.createForClass(usuario);
