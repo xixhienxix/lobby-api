@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { environment } from './environments/environment';
+import { RequestMiddleWare } from './auth/middleware/request-middleware';
+import { HuespedController } from './auth/controllers/huesped.controller';
 
 @Module({
   imports: [
@@ -21,4 +23,8 @@ import { environment } from './environments/environment';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(RequestMiddleWare).forRoutes(HuespedController);
+  }
+}

@@ -19,6 +19,8 @@ export class usuario {
   rol: number;
   @Prop()
   hotel: string;
+  @Prop()
+  accessToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(usuario);
