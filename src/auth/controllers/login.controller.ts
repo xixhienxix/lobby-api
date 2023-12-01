@@ -79,8 +79,6 @@ export class LoginController {
   // @UseGuards(AuthenticationGuard)
   async getUserByToken(@Req() request: Request): Promise<any> {
     const token = request.headers.authorization;
-    const hotel = request.headers['content-location'];
-    console.log('hotel:  ', hotel);
     const decoded = jwtDecode(token);
     return decoded;
   }
