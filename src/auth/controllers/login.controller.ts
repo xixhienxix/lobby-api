@@ -16,6 +16,7 @@ import { JWTSECRET } from '../../environments/environment';
 import { AuthenticationGuard } from 'src/guards/auth.guard';
 import { jwtDecode } from 'jwt-decode';
 import { Request } from 'express';
+import { DateTime } from 'luxon';
 @Controller()
 export class LoginController {
   constructor(@InjectModel(usuario.name) private userModel: Model<usuario>) {}
@@ -81,7 +82,6 @@ export class LoginController {
     const hotel = request.headers['content-location'];
     console.log('hotel:  ', hotel);
     const decoded = jwtDecode(token);
-
     return decoded;
   }
 }

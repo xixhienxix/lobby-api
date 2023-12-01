@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
+    "luxon": "^3.4.4",
     "mongoose": "^8.0.1",
     "password-hash-and-salt": "^0.1.4",
     "reflect-metadata": "^0.1.13",
