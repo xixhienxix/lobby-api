@@ -6,10 +6,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { environment } from './environments/environment';
 import { RequestMiddleWare } from './auth/middleware/request-middleware';
 import { HuespedController } from './auth/controllers/huesped.controller';
+import { RoomsModule } from './rooms/rooms.module';
+import { CodesModule } from './codes/codes.module';
 
 @Module({
   imports: [
     AuthModule,
+    RoomsModule,
+    CodesModule,
     MongooseModule.forRoot(environment.MONGODB_CONNECTION_URL, {
       connectionFactory: (connection) => {
         connection.on('connected', () => {
