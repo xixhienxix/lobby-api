@@ -6,7 +6,7 @@ import { RolesUserGuard } from 'src/guards/roles.user.guard';
 export class RoomsController {
   constructor(private _habitacionService: RoomsService) {}
 
-  @Get('/api/habitaciones')
+  @Get('/habitaciones')
   @UseGuards(RolesUserGuard)
   async findAllRooms(@Req() request: Request): Promise<any> {
     const hotel = request.headers['hotel'];
@@ -14,7 +14,7 @@ export class RoomsController {
     return this._habitacionService.findAll(hotel);
   }
 
-  @Post('/api/habitacion/guardar')
+  @Post('/habitacion/guardar')
   @UseGuards(RolesUserGuard)
   async postRoom(@Body() body, @Req() request: Request): Promise<any> {
     const hotel = request.headers['hotel'];

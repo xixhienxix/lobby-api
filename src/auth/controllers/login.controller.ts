@@ -10,7 +10,7 @@ import { Request } from 'express';
 export class LoginController {
   constructor(@InjectModel(usuario.name) private userModel: Model<usuario>) {}
 
-  @Post('/api/login')
+  @Post('/login')
   async login(
     @Body('username') username: string,
     @Body('password') plainTextPassword: string,
@@ -60,7 +60,7 @@ export class LoginController {
     });
   }
 
-  @Get('/api/getUserByToken')
+  @Get('/getUserByToken')
   // @UseGuards(AuthenticationGuard)
   async getUserByToken(@Req() request: Request): Promise<any> {
     const token = request.headers.authorization;

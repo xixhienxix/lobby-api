@@ -12,12 +12,12 @@ export const createNestServer = async (expressInstance: express.Express) => {
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
     adapter,
-    {},
+    { cors: true },
   );
-  app.enableCors();
   return app.init();
 };
 createNestServer(server)
   .then((v) => console.log('Nest Ready'))
   .catch((err) => console.error('Nest broken', err));
+//export const api, defines the name of the function as "api" and then each request is attached
 export const api: functions.HttpsFunction = functions.https.onRequest(server);

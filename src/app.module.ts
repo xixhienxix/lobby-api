@@ -8,12 +8,16 @@ import { RequestMiddleWare } from './auth/middleware/request-middleware';
 import { HuespedController } from './auth/controllers/huesped.controller';
 import { RoomsModule } from './rooms/rooms.module';
 import { CodesModule } from './codes/codes.module';
+import { DivisasModule } from './divisas/divisas.module';
+import { TimezonesModule } from './timezones/timezones.module';
 
 @Module({
   imports: [
     AuthModule,
     RoomsModule,
     CodesModule,
+    DivisasModule,
+    TimezonesModule,
     MongooseModule.forRoot(environment.MONGODB_CONNECTION_URL, {
       connectionFactory: (connection) => {
         connection.on('connected', () => {

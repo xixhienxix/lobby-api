@@ -5,6 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch app",
+            "type": "node",
+            "request": "launch",
+            "args": [
+              "src/main.ts"
+            ],
+            "runtimeArgs": [
+              "-r",
+              "ts-node/register",
+              "-r",
+              "tsconfig-paths/register"
+            ],
+            "cwd": "${workspaceRoot}",
+            "internalConsoleOptions": "openOnSessionStart",
+            "env": {
+              "NODE_ENV": "local",
+              "NODE_PORT": "3000"
+            },
+            "sourceMaps": true,
+            "console": "internalConsole",
+            "outputCapture": "std"
+          },
+        {
             "name": "Attach",
             "port": 3000,
             "request": "attach",

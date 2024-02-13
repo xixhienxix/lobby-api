@@ -6,7 +6,7 @@ import { CodesService } from '../_services/codes.service';
 export class CodesController {
   constructor(private _codesService: CodesService) {}
 
-  @Get('/api/codigos/getAll')
+  @Get('/codigos/getAll')
   @UseGuards(RolesUserGuard)
   async findAllRooms(@Req() request: Request): Promise<any> {
     const hotel = request.headers['hotel'];

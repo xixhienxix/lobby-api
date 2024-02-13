@@ -15,4 +15,26 @@ export class UserService {
   async findOne(username: string): Promise<usuario> {
     return this.userModel.findOne({ username: username }).exec();
   }
+
+  async findHotels(): Promise<usuario[]> {
+    const usuariosResultQuery = await this.userModel
+      .distinct('hotel')
+      .lean()
+      .then((db_res) => {
+        if (db_res) {
+          return db_res;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+
+    return new Promise((resolve) => {
+      if (!usuariosResultQuery) {
+        return;
+      }
+      resolve(usuariosResultQuery);
+    });
+  }
 }
