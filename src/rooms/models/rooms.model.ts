@@ -6,8 +6,6 @@ export type HabitacionDocument = mongoose.HydratedDocument<room>; //<name of col
 @Schema()
 export class room {
   @Prop()
-  _id: string;
-  @Prop()
   Codigo: string;
   @Prop()
   Numero: string;
@@ -28,9 +26,9 @@ export class room {
   @Prop()
   Vista: string;
   @Prop()
-  Amenidades: [];
+  Amenidades: string[];
   @Prop()
-  Tipos_Cama: [];
+  Tipos_Camas: string[];
   @Prop()
   Inventario: number;
   @Prop()

@@ -13,7 +13,7 @@
     "deploy": "npm-run-all nest:build fb:deploy",
     "nest:build": "nest build",
     "nest:start": "nest start",
-    "nest:start:dev": "nest start --watch",
+    "nest:start:dev": "nest start --debug --watch",
     "nest:start:debug": "nest start --watch",
     "nest:start:prod": "node dist/main",
     "fb:build": "tsc",
