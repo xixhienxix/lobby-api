@@ -10,4 +10,8 @@ export class HuespedService {
   async findAll(): Promise<huesped[]> {
     return this.userModel.find().exec();
   }
+
+  async findbyRoom(roomCode:string): Promise<huesped[]> {
+    return this.userModel.find({Codigo:roomCode});
+  }
 }

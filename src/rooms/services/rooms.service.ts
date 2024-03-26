@@ -2,13 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { room } from '../models/rooms.model';
 import { Model } from 'mongoose';
+import { GuestService } from 'src/guests/services/guest.service';
 @Injectable()
 export class RoomsService {
-  constructor(@InjectModel(room.name) private habModel: Model<room>) {}
+  constructor(@InjectModel(room.name) private habModel: Model<room>,
+              private _guestService: GuestService) {}
 
   async findAll(hotel: string): Promise<room[]> {
     return this.habModel
       .find({ hotel: hotel })
+      .then((data) => {
+        if (!data) {
+          return;
+        }
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
+
+  async findAllRoomCodes(hotel: string): Promise<room[]> {
+    return this.habModel
+      .find({ hotel: hotel })
+      .distinct('Codigo')
       .then((data) => {
         if (!data) {
           return;
@@ -88,5 +107,45 @@ export class RoomsService {
         return response;
       }
     }
+  }
+
+  async deleteRoom(hotel: string, codigo:any): Promise<any> {
+    const filter = { hotel: hotel, Codigo: codigo };
+
+    // let rooms = await this.habModel
+    //   .find(filter)
+    //   .then((result) => {
+    //     if (result) {
+    //       if(result.hasOwnProperty('Numero')){
+    //         numHab = result[0].Numero
+    //       }
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     return err;
+    //   });
+
+
+    let huespeds = await this._guestService.findbyCode(hotel,codigo);
+
+    if(huespeds.length!=0){
+      return huespeds.length
+    }
+
+    let deleteResults = await this.habModel.deleteOne({ Codigo: codigo, hotel: hotel })
+              .then((data) => {
+                if (!data) {
+                  return {
+                    message: 'Failed',
+                  };
+                }
+                if (data) {
+                  return { message: 'Success' };
+                }
+                })
+                .catch((err) => {
+                  return err;
+                });
+
   }
 }

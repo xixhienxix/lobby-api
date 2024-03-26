@@ -12,6 +12,7 @@ import { DivisasModule } from './divisas/divisas.module';
 import { TimezonesModule } from './timezones/timezones.module';
 import { DisponibilidadModule } from './dispo/dispo.module';
 import { TarifasModule } from './tarifas/tarifas.module';
+import { GuestModule } from './guests/guest.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TarifasModule } from './tarifas/tarifas.module';
     DivisasModule,
     TarifasModule,
     TimezonesModule,
+    GuestModule,
     DisponibilidadModule,
     MongooseModule.forRoot(environment.MONGODB_CONNECTION_URL, {
       connectionFactory: (connection) => {

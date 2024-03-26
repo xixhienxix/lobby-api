@@ -14,7 +14,7 @@
     "nest:build": "nest build",
     "nest:start": "nest start",
     "nest:start:dev": "nest start --debug --watch",
-    "nest:start:debug": "nest start --watch",
+    "nest:start:debug": "nest start --debug --watch",
     "nest:start:prod": "node dist/main",
     "fb:build": "tsc",
     "fb:serve": "firebase serve --only functions",
@@ -27,7 +27,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "debug:func": "firebase emulators:start --inspect-functions"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",

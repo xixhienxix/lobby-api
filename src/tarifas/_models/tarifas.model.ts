@@ -10,9 +10,9 @@ export class tarifas {
   @Prop()
   Habitacion: string[];
   @Prop()
-  Llegada: string;
+  Llegada: Date;
   @Prop()
-  Salida: string;
+  Salida: Date;
   @Prop()
   Plan: string;
   @Prop()

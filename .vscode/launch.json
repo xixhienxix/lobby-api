@@ -4,37 +4,30 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "Launch app",
-            "type": "node",
-            "request": "launch",
-            "args": [
-              "src/main.ts"
-            ],
-            "runtimeArgs": [
-              "-r",
-              "ts-node/register",
-              "-r",
-              "tsconfig-paths/register"
-            ],
-            "cwd": "${workspaceRoot}",
-            "internalConsoleOptions": "openOnSessionStart",
-            "env": {
-              "NODE_ENV": "local",
-              "NODE_PORT": "3000"
-            },
-            "sourceMaps": true,
-            "console": "internalConsole",
-            "outputCapture": "std"
-          },
-        {
-            "name": "Attach",
-            "port": 3000,
-            "request": "attach",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "type": "node"
-        }
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug Nest Framework",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "nest:dev",
+          "--",
+          "--inspect-brk"
+        ],
+        "autoAttachChildProcesses": true,
+        "restart": true,
+        "sourceMaps": true,
+        "stopOnEntry": false,
+        "console": "integratedTerminal",
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach NodeFirebase",
+      "port": 9229,
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"]
+    }
     ]
 }

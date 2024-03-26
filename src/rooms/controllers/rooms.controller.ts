@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { RoomsService } from '../services/rooms.service';
 import { RolesUserGuard } from 'src/guards/roles.user.guard';
 
@@ -14,10 +14,25 @@ export class RoomsController {
     return this._habitacionService.findAll(hotel);
   }
 
+  @Get('/habitaciones/codigos')
+  @UseGuards(RolesUserGuard)
+  async findAllRoomCodes(@Req() request: Request): Promise<any> {
+    const hotel = request.headers['hotel'];
+
+    return this._habitacionService.findAllRoomCodes(hotel);
+  }
+
   @Post('/habitacion/guardar')
   @UseGuards(RolesUserGuard)
   async postRoom(@Body() body, @Req() request: Request): Promise<any> {
     const hotel = request.headers['hotel'];
     return this._habitacionService.postRoom(hotel, body);
+  }
+
+  @Delete('/habitacion/delete/:codigo')
+  @UseGuards(RolesUserGuard)
+  async deleteRoom(@Req() request: Request, @Param('codigo') codigo: string): Promise<any> {
+    const hotel = request.headers['hotel'];
+    return this._habitacionService.deleteRoom(hotel, codigo);
   }
 }
