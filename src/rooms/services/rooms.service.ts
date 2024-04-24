@@ -112,27 +112,13 @@ export class RoomsService {
   async deleteRoom(hotel: string, codigo:any): Promise<any> {
     const filter = { hotel: hotel, Codigo: codigo };
 
-    // let rooms = await this.habModel
-    //   .find(filter)
-    //   .then((result) => {
-    //     if (result) {
-    //       if(result.hasOwnProperty('Numero')){
-    //         numHab = result[0].Numero
-    //       }
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     return err;
-    //   });
-
-
     let huespeds = await this._guestService.findbyCode(hotel,codigo);
 
     if(huespeds.length!=0){
       return huespeds.length
     }
 
-    let deleteResults = await this.habModel.deleteOne({ Codigo: codigo, hotel: hotel })
+    let deleteResults = await this.habModel.deleteMany({ Codigo: codigo, hotel: hotel })
               .then((data) => {
                 if (!data) {
                   return {

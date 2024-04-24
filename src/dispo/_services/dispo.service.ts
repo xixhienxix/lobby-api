@@ -65,4 +65,92 @@ export class DisponibilidadService {
         return err;
       });
   }
+
+  async getAvailavility(hotel: string, params): Promise<any> {
+
+    const numeroCuarto = params.numCuarto
+    const codigoCuarto = params.codigoCuarto
+    const cuarto = params.cuarto
+    const dias = params.dias
+    const folio = params.folio
+
+    let dispoquery; 
+
+    console.log(params.initialDate)
+    console.log(params.endDate)
+    console.log("HOTEL: ",hotel)
+
+    let mySet = new Set();
+    let sinDisponibilidad=[];
+    let setArray=[]
+
+    //Estatus:0=No Disponible (Ni Llegadas ni Salidas)
+    //Estatus:1=Disponible
+    //Estatus:2=No Llegadas
+    //Estatus:3=No Salidas
+    //Estatus:4=Fuera de Servicio
+
+    if(cuarto != '1'){
+      dispoquery = this.dispoModel.find({
+        $and: [
+          {
+            $or:[
+              {
+                Llegada: {
+                $gte: new Date(params.initialDate) 
+                }
+              },
+              {
+                Salida: {
+                $lte: new Date(params.endDate)
+                }
+              },
+            ]
+          },
+          {        
+            hotel: hotel,
+          },
+          {
+            Cuarto:codigoCuarto
+          }
+        ]
+      }).catch((err) => {
+        return err;
+      });
+    }else{
+      dispoquery = this.dispoModel.find({ 
+        $and: [
+        {
+          $or:[
+            {
+              Llegada: {
+              $gte: new Date(params.initialDate) 
+              }
+            },
+            {
+              Salida: {
+              $lte: new Date(params.endDate)
+              }
+            },
+          ]
+        },
+        {        
+          hotel: hotel,
+        }
+      ]
+      }).catch((err) => {
+             return err;
+           });
+    }
+
+    const disponibilidad = await dispoquery.then((doc:any)=> {
+                                  for(let i=0;i<doc.length;i++){
+                                      sinDisponibilidad.push(doc[i]._doc.Habitacion)
+                                    }
+                                  return sinDisponibilidad;
+                                  })
+
+  return disponibilidad
+
+  }
 }
