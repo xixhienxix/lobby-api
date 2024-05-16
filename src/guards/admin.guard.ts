@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AuthenticationGuard } from './authorization.guard';
+import { AuthenticationGuard } from './auth.guard';
 
 @Injectable()
 export class AdminGuard extends AuthenticationGuard {

@@ -6,10 +6,24 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { environment } from './environments/environment';
 import { RequestMiddleWare } from './auth/middleware/request-middleware';
 import { HuespedController } from './auth/controllers/huesped.controller';
+import { RoomsModule } from './rooms/rooms.module';
+import { CodesModule } from './codes/codes.module';
+import { DivisasModule } from './divisas/divisas.module';
+import { TimezonesModule } from './timezones/timezones.module';
+import { DisponibilidadModule } from './dispo/dispo.module';
+import { TarifasModule } from './tarifas/tarifas.module';
+import { GuestModule } from './guests/guest.module';
 
 @Module({
   imports: [
     AuthModule,
+    RoomsModule,
+    CodesModule,
+    DivisasModule,
+    TarifasModule,
+    TimezonesModule,
+    GuestModule,
+    DisponibilidadModule,
     MongooseModule.forRoot(environment.MONGODB_CONNECTION_URL, {
       connectionFactory: (connection) => {
         connection.on('connected', () => {

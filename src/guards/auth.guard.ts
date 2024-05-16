@@ -5,16 +5,20 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import * as jwt from 'jsonwebtoken';
+import { JWTSECRET } from 'src/environments/environment';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
+  constructor(private allowedRoles: string[]) {}
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const host = context.switchToHttp(),
-      request = host.getRequest();
+      req = host.getRequest();
 
-    const user = request['user'];
+    const authJwtToken = req.headers['authorization'];
+    const user = jwt.verify(authJwtToken, JWTSECRET);
 
     if (!user) {
       console.log('User Not Allowed by Guard');

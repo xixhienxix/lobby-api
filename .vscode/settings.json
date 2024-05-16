@@ -1,24 +1,24 @@
 {
     "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#fff9e0",
-        "activityBar.background": "#fff9e0",
+        "activityBar.activeBackground": "#d3e7cb",
+        "activityBar.background": "#d3e7cb",
         "activityBar.foreground": "#15202b",
         "activityBar.inactiveForeground": "#15202b99",
-        "activityBarBadge.background": "#00bf9a",
+        "activityBarBadge.background": "#7c90c3",
         "activityBarBadge.foreground": "#15202b",
         "commandCenter.border": "#15202b99",
-        "sash.hoverBorder": "#fff9e0",
-        "statusBar.background": "#ffeead",
+        "sash.hoverBorder": "#d3e7cb",
+        "statusBar.background": "#b6d7a8",
         "statusBar.foreground": "#15202b",
-        "statusBarItem.hoverBackground": "#ffe37a",
-        "statusBarItem.remoteBackground": "#ffeead",
+        "statusBarItem.hoverBackground": "#99c785",
+        "statusBarItem.remoteBackground": "#b6d7a8",
         "statusBarItem.remoteForeground": "#15202b",
-        "titleBar.activeBackground": "#ffeead",
+        "titleBar.activeBackground": "#b6d7a8",
         "titleBar.activeForeground": "#15202b",
-        "titleBar.inactiveBackground": "#ffeead99",
+        "titleBar.inactiveBackground": "#b6d7a899",
         "titleBar.inactiveForeground": "#15202b99",
         "typescript.validate.enable": true,
         "typescript.tsserver.experimental.enableProjectDiagnostics": true
     },
-    "peacock.color": "#ffeead"
+    "peacock.color": "#b6d7a8"
 }
