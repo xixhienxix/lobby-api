@@ -44,8 +44,8 @@ export class TarifasService {
   async postTarifa(hotel, body): Promise<tarifas[]> {
     console.log(body);
     return this.tarifasModel
-      .findOneAndUpdate(
-        { Tarifa: body.tarifa.Tarifa, hotel: hotel },
+      .create(
+        // { Tarifa: body.tarifa.Tarifa, hotel: hotel },
         {
           Tarifa: body.tarifa.Tarifa,
           Habitacion: body.tarifa.Habitacion,
@@ -82,5 +82,21 @@ export class TarifasService {
         console.log(err);
         return err;
       });
+  }
+
+  async deleteTarifa(hotel, tarifa:string):Promise<any>{
+    return this.tarifasModel
+    .deleteOne({ Tarifa: tarifa, hotel: hotel })
+    .then((data) => {
+      if (!data) {
+        return;
+      }
+      if (data) {
+        return data;
+      }
+    })
+    .catch((err) => {
+      return err;
+    });
   }
 }

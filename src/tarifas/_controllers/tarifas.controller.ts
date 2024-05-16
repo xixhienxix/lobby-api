@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, Get, UseGuards, Delete, Param } from '@nestjs/common';
 import { RolesUserGuard } from 'src/guards/roles.user.guard';
 import { TarifasService } from '../_services/tarifas.service';
 
@@ -35,5 +35,13 @@ export class TarifasController {
     const hotel = request.headers['hotel'];
 
     return this._tarifasService.postTarifa(hotel, body);
+  }
+
+  @Delete('/tarifas/especial/delete/:tarifa')
+  @UseGuards(RolesUserGuard)
+  deleteTarifaEspecial(@Req() request: Request, @Param("tarifa") tarifa:string) {
+    const hotel = request.headers['hotel'];
+
+    return this._tarifasService.deleteTarifa(hotel, tarifa);
   }
 }

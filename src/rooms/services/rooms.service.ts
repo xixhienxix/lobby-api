@@ -3,9 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { room } from '../models/rooms.model';
 import { Model } from 'mongoose';
 import { GuestService } from 'src/guests/services/guest.service';
+import { tarifas } from 'src/tarifas/_models/tarifas.model';
 @Injectable()
 export class RoomsService {
-  constructor(@InjectModel(room.name) private habModel: Model<room>,
+  constructor(
+  @InjectModel(room.name) private habModel: Model<room>,
+  @InjectModel('Tarifas') private readonly tarifasModel: Model<tarifas>,
               private _guestService: GuestService) {}
 
   async findAll(hotel: string): Promise<room[]> {
@@ -119,7 +122,22 @@ export class RoomsService {
     }
 
     let deleteResults = await this.habModel.deleteMany({ Codigo: codigo, hotel: hotel })
-              .then((data) => {
+              .then(async (data) => {
+                if(data.deletedCount != 0){
+                  await this.tarifasModel.deleteMany({ Habitacion: codigo, hotel: hotel }, { Habitacion$:1 }).then(async (data) => {
+                    if (!data) {
+                      return {
+                        message: 'Failed',
+                      };
+                    }
+                    if (data) {
+                      return { message: 'Success' };
+                    }
+                    })
+                    .catch((err) => {
+                      return err;
+                    });
+                }
                 if (!data) {
                   return {
                     message: 'Failed',
@@ -133,5 +151,23 @@ export class RoomsService {
                   return err;
                 });
 
+  }
+
+  async uploadImgToMongo(hotel:string, body:any): Promise<room[]> {
+    const codigoCuarto = body.fileUploadName.split('.')[0]
+
+    return this.habModel
+      .updateMany({Codigo:codigoCuarto,hotel:hotel},{$set:{URL:body.downloadURL}},{ upsert: true })
+      .then((data) => {
+        if (!data) {
+          return;
+        }
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
   }
 }

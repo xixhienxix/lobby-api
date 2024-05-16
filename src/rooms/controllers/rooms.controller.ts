@@ -35,4 +35,12 @@ export class RoomsController {
     const hotel = request.headers['hotel'];
     return this._habitacionService.deleteRoom(hotel, codigo);
   }
+
+  @Post('update/habitacion/imageurl')
+  @UseGuards(RolesUserGuard)
+  async updateImgToMongo(@Body() body, @Req() request:Request): Promise<any> {
+    const hotel = request.headers['hotel'];
+
+    return this._habitacionService.uploadImgToMongo(hotel,body);
+  }
 }

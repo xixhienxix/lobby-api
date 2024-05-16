@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 
 export type HabitacionDocument = mongoose.HydratedDocument<room>; //<name of collection in Mongo>
 
-@Schema()
+@Schema({ collection: 'Habitaciones' })
 export class room {
   @Prop()
   Codigo: string;
