@@ -3,40 +3,98 @@ import * as mongoose from 'mongoose';
 
 export type GuestDocument = mongoose.HydratedDocument<huespeds>; //<name of collection in Mongo>
 
-@Schema({ collection: 'huespeds' })
+@Schema({ collection: 'Reservaciones' })
 export class huespeds {
   @Prop()
-  Codigo: string;
+  folio:string
   @Prop()
-  Numero: string;
+  adultos:number;
   @Prop()
-  Descripcion: string;
+  ninos:number;
   @Prop()
-  Estatus: number;
+  nombre: string;
+  // apellido: string;
   @Prop()
-  Camas: number;
+  estatus: string; // Huesped en Casa = 1 | Reserva Sin Pagar = 2 | Reserva Confirmada = 3 | Hizo Checkout = 4 | Uso Interno = 5 | Bloqueo = 6 | Reserva Temporal = 7
   @Prop()
-  Adultos: number;
+  llegada: string;
   @Prop()
-  Ninos: number;
+  salida: string;
   @Prop()
-  Tarifa: number;
+  noches: number;
   @Prop()
-  Tipo: string;
+  tarifa:string;
   @Prop()
-  Vista: string;
+  porPagar: number;
   @Prop()
-  Amenidades: string[];
+  pendiente: number;
   @Prop()
-  Tipos_Camas: string[];
+  origen: string;
   @Prop()
-  Inventario: number;
+  habitacion: string;
   @Prop()
-  Orden: number;
+  telefono:string;
   @Prop()
-  URL: string;  
+  email:string;
+  @Prop()
+  motivo:string;
+  //Otros Detalles
+  @Prop()
+  fechaNacimiento:string;
+  @Prop()
+  trabajaEn:string;
+  @Prop()
+  tipoDeID:string;
+  @Prop()
+  numeroDeID:string;
+  @Prop()
+  direccion:string;
+  @Prop()
+  pais:string;
+  @Prop()
+  ciudad:string;
+  @Prop()
+  codigoPostal:string;
+  @Prop()
+  lenguaje:string;
+  @Prop()
+  numeroCuarto:string;
+  @Prop()
+  creada:string;
+  @Prop()
+  tipoHuesped:string;
+  @Prop()
+  notas:string;
+  @Prop()
+  vip:string;
+  @Prop()
+  ID_Socio:number;
+  @Prop()
+  estatus_Ama_De_Llaves:string;
   @Prop()
   hotel: string;
 }
 
 export const GuestSchema = SchemaFactory.createForClass(huespeds);
+
+
+export type PromesasDocument = mongoose.HydratedDocument<Promesas>; //<name of collection in Mongo>
+
+@Schema({ collection: 'Promesas_Pago' })
+export class Promesas {
+  @Prop()
+  Folio:string
+  @Prop()
+  Fecha:Date;
+  @Prop()
+  Cantidad:number;
+  @Prop()
+  Aplicado: boolean;
+  @Prop()
+  Estatus:string;
+  @Prop()
+  hotel: string;
+  // apellido: string;
+}
+
+export const PromesasSchema = SchemaFactory.createForClass(Promesas);

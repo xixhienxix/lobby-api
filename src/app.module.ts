@@ -13,6 +13,7 @@ import { TimezonesModule } from './timezones/timezones.module';
 import { DisponibilidadModule } from './dispo/dispo.module';
 import { TarifasModule } from './tarifas/tarifas.module';
 import { GuestModule } from './guests/guest.module';
+import { HouseKeepingModule } from './housekeepingcodes/housekeepingcodes.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { GuestModule } from './guests/guest.module';
     TimezonesModule,
     GuestModule,
     DisponibilidadModule,
+    HouseKeepingModule,
     MongooseModule.forRoot(environment.MONGODB_CONNECTION_URL, {
       connectionFactory: (connection) => {
         connection.on('connected', () => {

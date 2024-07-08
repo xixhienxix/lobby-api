@@ -67,22 +67,21 @@ export class DisponibilidadService {
   }
 
   async getAvailavility(hotel: string, params): Promise<any> {
+    const numeroCuarto = params.numCuarto;
+    const codigoCuarto = params.codigoCuarto;
+    const cuarto = params.cuarto;
+    const dias = params.dias;
+    const folio = params.folio;
 
-    const numeroCuarto = params.numCuarto
-    const codigoCuarto = params.codigoCuarto
-    const cuarto = params.cuarto
-    const dias = params.dias
-    const folio = params.folio
+    let dispoquery;
 
-    let dispoquery; 
+    console.log(params.initialDate);
+    console.log(params.endDate);
+    console.log('HOTEL: ', hotel);
 
-    console.log(params.initialDate)
-    console.log(params.endDate)
-    console.log("HOTEL: ",hotel)
-
-    let mySet = new Set();
-    let sinDisponibilidad=[];
-    let setArray=[]
+    const mySet = new Set();
+    const sinDisponibilidad = [];
+    const setArray = [];
 
     //Estatus:0=No Disponible (Ni Llegadas ni Salidas)
     //Estatus:1=Disponible
@@ -90,67 +89,136 @@ export class DisponibilidadService {
     //Estatus:3=No Salidas
     //Estatus:4=Fuera de Servicio
 
-    if(cuarto != '1'){
-      dispoquery = this.dispoModel.find({
-        $and: [
-          {
-            $or:[
+    if (cuarto != '1') {
+      dispoquery = this.dispoModel
+        .find({
+          hotel: 'hotel',
+          numeroCuarto: cuarto,
+          $expr: {
+            $or: [
               {
-                Llegada: {
-                $gte: new Date(params.initialDate) 
-                }
+                $and: [
+                  {
+                    $gte: [
+                      {
+                        $dateFromString: {
+                          dateString: '$llegada',
+                        },
+                      },
+                      new Date('2024-06-11T06:00:00.000Z'),
+                    ],
+                  },
+                  {
+                    $lt: [
+                      {
+                        $dateFromString: {
+                          dateString: '$llegada',
+                        },
+                      },
+                      new Date('2024-06-16T06:00:00.000Z'),
+                    ],
+                  },
+                ],
               },
               {
-                Salida: {
-                $lte: new Date(params.endDate)
-                }
+                $and: [
+                  {
+                    $gte: [
+                      {
+                        $dateFromString: {
+                          dateString: '$salida',
+                        },
+                      },
+                      new Date('2024-06-11T06:00:00.000Z'),
+                    ],
+                  },
+                  {
+                    $lt: [
+                      {
+                        $dateFromString: {
+                          dateString: '$salida',
+                        },
+                      },
+                      new Date('2024-06-16T06:00:00.000Z'),
+                    ],
+                  },
+                ],
               },
-            ]
+            ],
           },
-          {        
-            hotel: hotel,
+        })
+        .catch((err) => {
+          return err;
+        });
+    } else {
+      dispoquery = this.dispoModel
+        .find({
+          hotel: 'hotel',
+          $expr: {
+            $or: [
+              {
+                $and: [
+                  {
+                    $gte: [
+                      {
+                        $dateFromString: {
+                          dateString: '$llegada',
+                        },
+                      },
+                      new Date('2024-06-11T06:00:00.000Z'),
+                    ],
+                  },
+                  {
+                    $lt: [
+                      {
+                        $dateFromString: {
+                          dateString: '$llegada',
+                        },
+                      },
+                      new Date('2024-06-16T06:00:00.000Z'),
+                    ],
+                  },
+                ],
+              },
+              {
+                $and: [
+                  {
+                    $gte: [
+                      {
+                        $dateFromString: {
+                          dateString: '$salida',
+                        },
+                      },
+                      new Date('2024-06-11T06:00:00.000Z'),
+                    ],
+                  },
+                  {
+                    $lt: [
+                      {
+                        $dateFromString: {
+                          dateString: '$salida',
+                        },
+                      },
+                      new Date('2024-06-16T06:00:00.000Z'),
+                    ],
+                  },
+                ],
+              },
+            ],
           },
-          {
-            Cuarto:codigoCuarto
-          }
-        ]
-      }).catch((err) => {
-        return err;
-      });
-    }else{
-      dispoquery = this.dispoModel.find({ 
-        $and: [
-        {
-          $or:[
-            {
-              Llegada: {
-              $gte: new Date(params.initialDate) 
-              }
-            },
-            {
-              Salida: {
-              $lte: new Date(params.endDate)
-              }
-            },
-          ]
-        },
-        {        
-          hotel: hotel,
-        }
-      ]
-      }).catch((err) => {
-             return err;
-           });
+        })
+        .catch((err) => {
+          return err;
+        });
     }
 
-    const disponibilidad = await dispoquery.then((doc:any)=> {
-                                  for(let i=0;i<doc.length;i++){
-                                      sinDisponibilidad.push(doc[i]._doc.Habitacion)
-                                    }
-                                  return sinDisponibilidad;
-                                  })
+    const disponibilidad = await dispoquery.then((doc: any) => {
+      for (let i = 0; i < doc.length; i++) {
+        sinDisponibilidad.push(doc[i]._doc.Habitacion);
+      }
+      return sinDisponibilidad;
+    });
 
-  return disponibilidad
-
+    return disponibilidad;
   }
 }

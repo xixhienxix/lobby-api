@@ -42,10 +42,8 @@ export class TarifasService {
   }
 
   async postTarifa(hotel, body): Promise<tarifas[]> {
-    console.log(body);
     return this.tarifasModel
       .create(
-        // { Tarifa: body.tarifa.Tarifa, hotel: hotel },
         {
           Tarifa: body.tarifa.Tarifa,
           Habitacion: body.tarifa.Habitacion,
@@ -63,6 +61,13 @@ export class TarifasService {
           Adultos: body.tarifa.Adultos,
           Ninos: body.tarifa.Ninos,
           Descuento: body.tarifa.Descuento,
+          Tarifa_Especial_1: body.tarifa.Tarifa_Especial_1,
+          Tarifa_Especial_2: body.tarifa.Tarifa_Especial_2,
+          Tarifa_Extra_Con: body.tarifa.Tarifa_Extra_Con,
+          Tarifa_Extra_Sin: body.tarifa.Tarifa_Extra_Sin,
+          Tarifa_Sin_Variantes: body.tarifa.Tarifa_Sin_Variantes,
+          Visibilidad: body.tarifa.Visibilidad,
+          Cancelacion: body.tarifa.Cancelacion,
           hotel: hotel,
         },
         { new: true, upsert: true },
@@ -84,19 +89,79 @@ export class TarifasService {
       });
   }
 
-  async deleteTarifa(hotel, tarifa:string):Promise<any>{
+  async updateTarifaBase(hotel, body): Promise<tarifas> {
+    const update = body.tarifas;
+
     return this.tarifasModel
-    .deleteOne({ Tarifa: tarifa, hotel: hotel })
-    .then((data) => {
-      if (!data) {
-        return;
-      }
-      if (data) {
-        return data;
-      }
-    })
-    .catch((err) => {
-      return err;
-    });
+      .findOneAndUpdate(
+        {
+          hotel: hotel,
+          Tarifa: body.tarifas.Tarifa,
+          Habitacion: body.tarifas.Habitacion,
+        },
+        update,
+        { upsert: true, setDefaultsOnInsert: true, new: true },
+      )
+      .then((data) => {
+        if (!data) {
+          return {
+            message: 'No se pudo Guardar la Tarifa Intente de nuevo mas tarde',
+          };
+        }
+        if (data) {
+          console.log('Agregada con exito: ', data);
+          return { message: 'Tarifa generada con exito' };
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+  }
+
+  async updateTarifaEspecial(hotel, body): Promise<tarifas> {
+    const update = body.tarifas;
+
+    return this.tarifasModel
+      .findOneAndUpdate(
+        {
+          hotel: hotel,
+          Tarifa: body.tarifas.Tarifa,
+          Habitacion: body.tarifas.Habitacion,
+        },
+        update,
+        { upsert: true, setDefaultsOnInsert: true, new: true },
+      )
+      .then((data) => {
+        if (!data) {
+          return {
+            message: 'No se pudo Guardar la Tarifa Intente de nuevo mas tarde',
+          };
+        }
+        if (data) {
+          console.log('Agregada con exito: ', data);
+          return { message: 'Tarifa generada con exito' };
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
+  }
+
+  async deleteTarifa(hotel, tarifa: string): Promise<any> {
+    return this.tarifasModel
+      .deleteOne({ Tarifa: tarifa, hotel: hotel })
+      .then((data) => {
+        if (!data) {
+          return;
+        }
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
   }
 }

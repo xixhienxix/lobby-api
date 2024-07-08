@@ -11,7 +11,7 @@ export class HuespedService {
     return this.userModel.find().exec();
   }
 
-  async findbyRoom(roomCode:string): Promise<huesped[]> {
-    return this.userModel.find({Codigo:roomCode});
+  async findbyRoom(roomCode: string): Promise<huesped[]> {
+    return this.userModel.find({ Codigo: roomCode });
   }
 }

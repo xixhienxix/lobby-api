@@ -7,9 +7,10 @@ import { tarifas } from 'src/tarifas/_models/tarifas.model';
 @Injectable()
 export class RoomsService {
   constructor(
-  @InjectModel(room.name) private habModel: Model<room>,
-  @InjectModel('Tarifas') private readonly tarifasModel: Model<tarifas>,
-              private _guestService: GuestService) {}
+    @InjectModel(room.name) private habModel: Model<room>,
+    @InjectModel('Tarifas') private readonly tarifasModel: Model<tarifas>,
+    private _guestService: GuestService,
+  ) {}
 
   async findAll(hotel: string): Promise<room[]> {
     return this.habModel
@@ -112,52 +113,61 @@ export class RoomsService {
     }
   }
 
-  async deleteRoom(hotel: string, codigo:any): Promise<any> {
-    const filter = { hotel: hotel, Codigo: codigo };
+  async deleteRoom(hotel: string, codigo: any): Promise<any> {
+    // const filter = { hotel: hotel, Codigo: codigo };
 
-    let huespeds = await this._guestService.findbyCode(hotel,codigo);
+    const huespeds = await this._guestService.findbyCodeAndDate(hotel, codigo);
 
-    if(huespeds.length!=0){
-      return huespeds.length
+    if (huespeds.length != 0) {
+      return huespeds.length;
     }
 
-    let deleteResults = await this.habModel.deleteMany({ Codigo: codigo, hotel: hotel })
-              .then(async (data) => {
-                if(data.deletedCount != 0){
-                  await this.tarifasModel.deleteMany({ Habitacion: codigo, hotel: hotel }, { Habitacion$:1 }).then(async (data) => {
-                    if (!data) {
-                      return {
-                        message: 'Failed',
-                      };
-                    }
-                    if (data) {
-                      return { message: 'Success' };
-                    }
-                    })
-                    .catch((err) => {
-                      return err;
-                    });
-                }
-                if (!data) {
-                  return {
-                    message: 'Failed',
-                  };
-                }
-                if (data) {
-                  return { message: 'Success' };
-                }
-                })
-                .catch((err) => {
-                  return err;
-                });
-
+    await this.habModel
+      .deleteMany({ Codigo: codigo, hotel: hotel })
+      .then(async (data) => {
+        if (data.deletedCount != 0) {
+          await this.tarifasModel
+            .deleteMany(
+              { Habitacion: codigo, hotel: hotel },
+              { Habitacion$: 1 },
+            )
+            .then(async (data) => {
+              if (!data) {
+                return {
+                  message: 'Failed',
+                };
+              }
+              if (data) {
+                return { message: 'Success' };
+              }
+            })
+            .catch((err) => {
+              return err;
+            });
+        }
+        if (!data) {
+          return {
+            message: 'Failed',
+          };
+        }
+        if (data) {
+          return { message: 'Success' };
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
   }
 
-  async uploadImgToMongo(hotel:string, body:any): Promise<room[]> {
-    const codigoCuarto = body.fileUploadName.split('.')[0]
+  async uploadImgToMongo(hotel: string, body: any): Promise<room[]> {
+    const codigoCuarto = body.fileUploadName.split('.')[0];
 
     return this.habModel
-      .updateMany({Codigo:codigoCuarto,hotel:hotel},{$set:{URL:body.downloadURL}},{ upsert: true })
+      .updateMany(
+        { Codigo: codigoCuarto, hotel: hotel },
+        { $set: { URL: body.downloadURL } },
+        { upsert: true },
+      )
       .then((data) => {
         if (!data) {
           return;

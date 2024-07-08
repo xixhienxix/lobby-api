@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { RoomsService } from '../services/rooms.service';
 import { RolesUserGuard } from 'src/guards/roles.user.guard';
 
@@ -31,16 +40,19 @@ export class RoomsController {
 
   @Delete('/habitacion/delete/:codigo')
   @UseGuards(RolesUserGuard)
-  async deleteRoom(@Req() request: Request, @Param('codigo') codigo: string): Promise<any> {
+  async deleteRoom(
+    @Req() request: Request,
+    @Param('codigo') codigo: string,
+  ): Promise<any> {
     const hotel = request.headers['hotel'];
     return this._habitacionService.deleteRoom(hotel, codigo);
   }
 
   @Post('update/habitacion/imageurl')
   @UseGuards(RolesUserGuard)
-  async updateImgToMongo(@Body() body, @Req() request:Request): Promise<any> {
+  async updateImgToMongo(@Body() body, @Req() request: Request): Promise<any> {
     const hotel = request.headers['hotel'];
 
-    return this._habitacionService.uploadImgToMongo(hotel,body);
+    return this._habitacionService.uploadImgToMongo(hotel, body);
   }
 }

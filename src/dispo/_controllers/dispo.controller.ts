@@ -11,11 +11,9 @@ export class DispoController {
   }
 
   @Get('/reportes/disponibilidad')
-  findAvaibility(@Query() params, @Req() request: Request){
+  findAvaibility(@Query() params, @Req() request: Request) {
     const hotel = request.headers['hotel'];
-    console.log("HOTEL IN CONTROLLER: ", hotel)
-    return this._disponibilidadService.getAvailavility(hotel,params);
-
+    return this._disponibilidadService.getAvailavility(hotel, params);
   }
 
   @Post('/disponibilidad/booking')
