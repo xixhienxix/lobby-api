@@ -5,6 +5,8 @@ export type TarifasDocument = mongoose.HydratedDocument<tarifas>; //<name of col
 
 @Schema({ collection: 'Tarifas' })
 export class tarifas {
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  _id: string;
   @Prop()
   Tarifa: string;
   @Prop()
@@ -24,23 +26,11 @@ export class tarifas {
   @Prop()
   TarifaRack: number;
   @Prop()
-  TarifaXAdulto: string[];
-  @Prop()
-  TarifaXNino: string[];
-  @Prop()
   Estado: boolean;
   @Prop()
   Dias: string[];
   @Prop({ type: Object })
-  Tarifa_Especial_1: any;
-  @Prop({ type: Object })
-  Tarifa_Especial_2: any;
-  @Prop({ type: Object })
-  Tarifa_Sin_Variantes: any;
-  @Prop({ type: Object })
-  Tarifa_Extra_Sin: any;
-  @Prop({ type: Object })
-  Tarifa_Extra_Con: any;
+  TarifasActivas: any;
   @Prop({ type: Object })
   Visibilidad: any;
   @Prop({ type: Object })

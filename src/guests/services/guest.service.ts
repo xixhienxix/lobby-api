@@ -93,8 +93,6 @@ export class GuestService {
   async getDisponibilidad(hotel: string, params: any): Promise<any> {
     const busqueda = params.params;
     const sinDisponibilidad = [];
-    const fechaInicial = new Date(busqueda.initialDate);
-    const fechaFinal = new Date(busqueda.endDate);
 
     const dispoquery = this.guestModel
       .find({

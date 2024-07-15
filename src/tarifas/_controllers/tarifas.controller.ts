@@ -38,21 +38,6 @@ export class TarifasController {
     return this._tarifasService.postTarifa(hotel, body);
   }
 
-  @Post('/tarifario/actualiza/tarifas')
-  @UseGuards(RolesUserGuard)
-  updateTarifaEspecial(@Body() body, @Req() request: Request) {
-    const hotel = request.headers['hotel'];
-    return this._tarifasService.updateTarifaEspecial(hotel, body);
-  }
-
-  @Post('/tarifario/actualiza/tarifas')
-  @UseGuards(RolesUserGuard)
-  updateTarifa(@Body() body, @Req() request: Request) {
-    const hotel = request.headers['hotel'];
-
-    return this._tarifasService.updateTarifaBase(hotel, body);
-  }
-
   @Post('/tarifas/especial/agregar')
   @UseGuards(RolesUserGuard)
   postTarifaEspecial(@Body() body, @Req() request: Request) {
@@ -61,14 +46,21 @@ export class TarifasController {
     return this._tarifasService.postTarifa(hotel, body);
   }
 
-  @Delete('/tarifas/especial/delete/:tarifa')
+  @Post('/tarifario/actualiza/tarifas')
   @UseGuards(RolesUserGuard)
-  deleteTarifaEspecial(
-    @Req() request: Request,
-    @Param('tarifa') tarifa: string,
-  ) {
-    const hotel = request.headers['hotel'];
+  updateTarifaEspecial(@Body() body) {
+    return this._tarifasService.updateTarifaEspecial(body);
+  }
 
-    return this._tarifasService.deleteTarifa(hotel, tarifa);
+  @Post('/tarifario/actualiza/tarifaBase')
+  @UseGuards(RolesUserGuard)
+  updateTarifa(@Body() body) {
+    return this._tarifasService.updateTarifaBase(body);
+  }
+
+  @Delete('/tarifas/especial/delete/:_id')
+  @UseGuards(RolesUserGuard)
+  deleteTarifaEspecial(@Param() _id) {
+    return this._tarifasService.deleteTarifa(_id);
   }
 }
