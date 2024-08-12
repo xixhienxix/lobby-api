@@ -6,9 +6,9 @@ export type HouseKeepingDocument = mongoose.HydratedDocument<HouseKeeping>; //<n
 @Schema({ collection: 'Ama_De_Llaves' })
 export class HouseKeeping {
   @Prop()
-  Descripcion:string
+  Descripcion: string;
   @Prop()
-  Color:string;
+  Color: string;
 }
 
 export const HouseKeepingSchema = SchemaFactory.createForClass(HouseKeeping);

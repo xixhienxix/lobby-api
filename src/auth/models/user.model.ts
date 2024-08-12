@@ -18,6 +18,8 @@ export class usuario {
   @Prop()
   rol: number;
   @Prop()
+  perfil: number;
+  @Prop()
   hotel: string;
   @Prop()
   accessToken: string;

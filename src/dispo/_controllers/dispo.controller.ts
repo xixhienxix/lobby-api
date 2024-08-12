@@ -1,5 +1,5 @@
 import { DisponibilidadService } from '../_services/dispo.service';
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 
 @Controller()
 export class DispoController {
@@ -10,10 +10,10 @@ export class DispoController {
     return this._disponibilidadService.getDisponibilidadBooking(params);
   }
 
-  @Get('/reportes/disponibilidad')
-  findAvaibility(@Query() params, @Req() request: Request) {
+  @Post('/reportes/disponibilidad')
+  findAvaibility(@Body() body, @Req() request: Request) {
     const hotel = request.headers['hotel'];
-    return this._disponibilidadService.getAvailavility(hotel, params);
+    return this._disponibilidadService.getAvailavility(hotel, body);
   }
 
   @Post('/disponibilidad/booking')

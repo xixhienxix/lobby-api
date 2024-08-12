@@ -7,10 +7,12 @@ import { GuestModule } from 'src/guests/guest.module';
 import { TarifasSchema } from 'src/tarifas/_models/tarifas.model';
 
 @Module({
-  imports: [GuestModule,
+  imports: [
+    GuestModule,
     MongooseModule.forFeature([
       { name: room.name, schema: RoomsSchema },
-      { name: 'Tarifas', schema: TarifasSchema}]),
+      { name: 'Tarifas', schema: TarifasSchema },
+    ]),
   ],
   controllers: [RoomsController],
   providers: [RoomsService],

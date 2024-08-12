@@ -14,6 +14,10 @@ import { DisponibilidadModule } from './dispo/dispo.module';
 import { TarifasModule } from './tarifas/tarifas.module';
 import { GuestModule } from './guests/guest.module';
 import { HouseKeepingModule } from './housekeepingcodes/housekeepingcodes.module';
+import { ParametrosModule } from './parametros/parametros.module';
+import { PromesasModule } from './promesas/promesas.module';
+import { AccountingModule } from './accounting/accounting.module';
+import { LogModule } from './activitylogs/logs.module';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { HouseKeepingModule } from './housekeepingcodes/housekeepingcodes.module
     GuestModule,
     DisponibilidadModule,
     HouseKeepingModule,
+    ParametrosModule,
+    PromesasModule,
+    LogModule,
+    AccountingModule,
     MongooseModule.forRoot(environment.MONGODB_CONNECTION_URL, {
       connectionFactory: (connection) => {
         connection.on('connected', () => {

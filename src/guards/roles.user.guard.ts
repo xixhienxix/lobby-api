@@ -7,7 +7,6 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
-import * as jwt from 'jsonwebtoken';
 type TokenPayload = {
   exp: number;
   iat: number;

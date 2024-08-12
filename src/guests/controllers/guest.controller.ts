@@ -1,9 +1,10 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
+  Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -43,14 +44,22 @@ export class GuestsController {
     return this._GuestService.onReservationResize(hotel, body);
   }
 
+  @Post('/reportes/actualiza/huesped')
+  @UseGuards(RolesUserGuard)
+  async updateHuesped(@Body() body, @Req() request: Request) {
+    const hotel = request.headers['hotel'];
+    return this._GuestService.updateHuesped(hotel, body);
+  }
+
   @Get('/promesas/:folio')
   @UseGuards(RolesUserGuard)
   async findPromesasByFolio(
     @Req() request: Request,
-    @Body() body,
+    @Param('folio') folio,
   ): Promise<any> {
     const hotel = request.headers['hotel'];
-    return this._GuestService.findPromesas(hotel, body);
+    console.log('Query:', folio);
+    return this._GuestService.findPromesas(hotel, folio);
   }
 
   @Post('/actualiza/estatus/huesped')
@@ -60,13 +69,49 @@ export class GuestsController {
     return this._GuestService.updateStatus(hotel, body);
   }
 
-  @Post('/promesas/update/estatus')
+  // Huesped Details
+  @Get('/details')
   @UseGuards(RolesUserGuard)
-  async updatePromesaStatus(
+  async getDetails(@Req() request: Request): Promise<any> {
+    const hotel = request.headers['hotel'];
+    return this._GuestService.getDetails(hotel);
+  }
+
+  @Post('/reportes/details')
+  @UseGuards(RolesUserGuard)
+  async postDetails(@Req() request: Request, @Body() body): Promise<any> {
+    const hotel = request.headers['hotel'];
+    return this._GuestService.postDetails(hotel, body);
+  }
+
+  @Get('/details/:folio')
+  @UseGuards(RolesUserGuard)
+  async getDetailsById(
     @Req() request: Request,
-    @Body() body,
+    @Param('folio') folio,
   ): Promise<any> {
     const hotel = request.headers['hotel'];
-    return this._GuestService.updateStatus(hotel, body);
+    return this._GuestService.getDetailsById(hotel, folio);
   }
+
+  @Post('/actualiza/estatus/reserva')
+  @UseGuards(RolesUserGuard)
+  async updateHuespedStatus(@Body() body, @Req() request: Request) {
+    const hotel = request.headers['hotel'];
+    return this._GuestService.updateEstatusHuesped(hotel, body);
+  }
+
+  // @Post('actualiza')
+  // async actualizaHuespedModifica(
+  //   @Req() request: Request,
+  //   @Body('llegada') llegada: string,
+  //   @Body('salida') salida: string,
+  //   @Body('numeroCuarto') numeroCuarto: string,
+  //   @Body('habitacion') habitacion: string,
+  // ) {
+  //   const hotel = request.headers['hotel'];
+
+  //   const nombreHotel = hotel.replace(/\s/g, '_');
+  //   return this.huespedService.actualizaHuespedModifica(llegada, salida, numeroCuarto, habitacion, nombreHotel);
+  // }
 }

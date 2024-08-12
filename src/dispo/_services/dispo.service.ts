@@ -67,6 +67,7 @@ export class DisponibilidadService {
   }
 
   async getAvailavility(hotel: string, params): Promise<any> {
+    console.log('params:', params);
     const numeroCuarto = params.numCuarto;
     const codigoCuarto = params.codigoCuarto;
     const cuarto = params.cuarto;

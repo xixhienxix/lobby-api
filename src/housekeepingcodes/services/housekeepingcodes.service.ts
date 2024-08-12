@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Foliador } from 'src/codes/_models/codes.model';
 import { HouseKeeping } from '../models/housekeeping.model';
+import { room } from 'src/rooms/models/rooms.model';
 @Injectable()
 export class HouseKeepingService {
-  constructor(@InjectModel(HouseKeeping.name) private houseKeepingModel: Model<HouseKeeping>) {}
+  constructor(
+    @InjectModel(HouseKeeping.name)
+    private houseKeepingModel: Model<HouseKeeping>,
+    @InjectModel(room.name) private readonly roomsModel: Model<room>,
+  ) {}
 
   async findAll(hotel: string): Promise<HouseKeeping[]> {
     return this.houseKeepingModel
@@ -23,6 +27,30 @@ export class HouseKeepingService {
       });
   }
 
-
+  async updateEstatus(hotel: string, body: any) {
+    console.log(body);
+    return this.roomsModel
+      .findOneAndUpdate(
+        { hotel: hotel, Numero: body.cuarto },
+        {
+          $set: {
+            Estatus: body.estatus,
+          },
+        },
+      )
+      .then((data) => {
+        if (!data) {
+          console.log(data);
+          return;
+        }
+        if (data) {
+          console.log(data);
+          return data;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return err;
+      });
   }
-
+}

@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Promesas, huespeds } from '../models/guest.model';
-import { Foliador } from 'src/codes/_models/codes.model';
+import { HuespedDetails, Promesas, huespeds } from '../models/guest.model';
+import { estatus, Foliador } from 'src/codes/_models/codes.model';
 @Injectable()
 export class GuestService {
   constructor(
     @InjectModel(huespeds.name) private guestModel: Model<huespeds>,
     @InjectModel('Foliador') private readonly foliadorModel: Model<Foliador>,
     @InjectModel('Promesas') private readonly promesasModel: Model<Promesas>,
+    @InjectModel('Estatus') private readonly estatusModel: Model<estatus>,
+    @InjectModel('Detalles_Huesped')
+    private readonly huespedDetailsModel: Model<HuespedDetails>,
   ) {}
 
   async findAll(hotel: string): Promise<huespeds[]> {
@@ -69,7 +72,7 @@ export class GuestService {
             llegada: data.data.StartTime,
             salida: data.data.EndTime,
             noches: data.data.stayNights,
-            tarifa: data.data.Tarifa,
+            tarifa: data.data.tarifaSeleccionada[0].Tarifa,
             porPagar: data.data.totalSeleccionado,
             pendiente: data.data.totalSeleccionado,
             habitacion: data.data.cuarto,
@@ -93,39 +96,43 @@ export class GuestService {
   async getDisponibilidad(hotel: string, params: any): Promise<any> {
     const busqueda = params.params;
     const sinDisponibilidad = [];
+    console.log('busqueda: ', busqueda);
 
     const dispoquery = this.guestModel
       .find({
-        $expr: {
-          $and: [
-            {
-              $gte: [
-                {
-                  $dateFromString: {
-                    dateString: '$llegada',
-                  },
-                },
-                new Date(busqueda.initialDate),
-              ],
+        hotel: hotel,
+        $or: [
+          // Caso 1: La fecha de llegada de la reservación está dentro del rango proporcionado
+          {
+            llegada: {
+              $gte: busqueda.initialDate,
+              $lt: busqueda.endDate,
             },
-            {
-              $lt: [
-                {
-                  $dateFromString: {
-                    dateString: '$llegada',
-                  },
-                },
-                new Date(busqueda.endDate),
-              ],
+          },
+          // Caso 2: La fecha de salida de la reservación está dentro del rango proporcionado
+          {
+            salida: {
+              $gt: busqueda.initialDate,
+              $lte: busqueda.endDate,
             },
-          ],
-        },
+          },
+          // Caso 3: La reservación abarca completamente el rango proporcionado
+          {
+            llegada: {
+              $lt: busqueda.initialDate,
+            },
+            salida: {
+              $gt: busqueda.endDate,
+            },
+          },
+        ],
       })
       .catch((err) => {
         return err;
       });
 
     const disponibilidad = await dispoquery.then((doc: any) => {
+      console.log('dispoAntes:', doc);
       for (let i = 0; i < doc.length; i++) {
         sinDisponibilidad.push(doc[i]._doc.numeroCuarto);
       }
@@ -184,10 +191,49 @@ export class GuestService {
       });
   }
 
+  // Huesped
+
+  async updateHuesped(hotel: string, body: any): Promise<huespeds[]> {
+    console.log('update Huesped', body);
+    return this.guestModel
+      .findOneAndUpdate(
+        { folio: body.data.folio, hotel: hotel },
+        {
+          $set: {
+            estatus: body.huesped.estatus,
+            noches: body.huesped.noches,
+            numeroCuarto: body.huesped.numeroCuarto,
+            llegada: body.huesped.llegada,
+            salida: body.huesped.salida,
+            habitacion: body.huesped.habitacion,
+            tarifa: body.huesped.tarifa,
+            pendiente: body.huesped.pendiente,
+            porPagar: body.huesped.porPagar,
+            tipoHuesped: body.huesped.tipoHuesped,
+            nombre: body.huesped.nombre,
+            email: body.huesped.email,
+            telefono: body.huesped.telefono,
+            notas: body.huesped.notas,
+            ID_Socio: body.huesped.ID_Socio,
+          },
+        },
+      )
+      .then((data) => {
+        if (!data) {
+          return;
+        }
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
+
   //PROMESAS
 
-  async findPromesas(hotel: string, body: any): Promise<huespeds[]> {
-    const folio = body.Folio;
+  async findPromesas(hotel: string, folio: any): Promise<huespeds[]> {
     return this.promesasModel
       .find({ Folio: folio, hotel: hotel })
       .then((data) => {
@@ -204,22 +250,41 @@ export class GuestService {
   }
 
   async updateStatus(hotel: string, body: any): Promise<huespeds[]> {
-    const folio = body.folio;
     return this.guestModel
-      .updateOne(
-        { folio: body.folio, hotel: hotel },
+      .findOneAndUpdate(
+        { folio: body.huesped.folio, hotel: hotel },
         {
           $set: {
-            llegada: body.llegada,
-            salida: body.salida,
-            tarifa: body.tarifa,
-            numeroCuarto: body.numeroCuarto,
-            habitacion: body.habitacion,
-            notas: body.notas,
-            estatus: body.estatus,
+            llegada: body.huesped.llegada,
+            salida: body.huesped.salida,
+            tarifa: body.huesped.tarifa,
+            numeroCuarto: body.huesped.numeroCuarto,
+            habitacion: body.huesped.habitacion,
+            notas: body.huesped.notas,
+            estatus: body.huesped.estatus,
           },
         },
       )
+      .then((data) => {
+        if (!data) {
+          console.log(data);
+          return;
+        }
+        if (data) {
+          console.log(data);
+          return data;
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
+
+  // HUESPED DETAILS
+
+  async getDetails(hotel: string): Promise<HuespedDetails[]> {
+    return this.huespedDetailsModel
+      .find({ hotel: hotel })
       .then((data) => {
         if (!data) {
           return;
@@ -230,6 +295,159 @@ export class GuestService {
       })
       .catch((err) => {
         return err;
+      });
+  }
+
+  async getDetailsById(
+    hotel: string,
+    folio: string,
+  ): Promise<HuespedDetails[]> {
+    return this.huespedDetailsModel
+      .findOne({ ID_Socio: folio, hotel: hotel })
+      .then((data) => {
+        if (!data) {
+          return;
+        }
+        if (data) {
+          return data;
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
+
+  async postDetails(hotel: string, body: any): Promise<HuespedDetails[]> {
+    console.log('body post huesped details', body);
+    return this.huespedDetailsModel
+      .findOneAndUpdate(
+        {
+          ID_Socio: body.ID_Socio,
+          hotel: hotel,
+        },
+        {
+          $set: {
+            ID_Socio: body.ID_Socio,
+            Nombre: body.Nombre,
+            email: body.email,
+            telefono: body.telefono,
+            tipoHuesped: body.tipoHuesped,
+            fechaNacimiento: body.fechaNacimiento,
+            trabajaEn: body.trabajaEn,
+            tipoDeID: body.tipoDeID,
+            numeroDeID: body.numeroDeID,
+            direccion: body.direccion,
+            pais: body.pais,
+            ciudad: body.ciudad,
+            codigoPostal: body.codigoPostal,
+            lenguaje: body.lenguaje,
+            notas: body.notas,
+          },
+        },
+        { upsert: true },
+      )
+      .then((data) => {
+        if (!data) {
+          console.log(data);
+          return;
+        }
+        if (data) {
+          console.log(data);
+          return data;
+        }
+      })
+      .catch((err) => {
+        return err;
+      });
+  }
+
+  async updateEstatusHuesped(hotel: string, body: any): Promise<any> {
+    console.log('body----------------------->: ', body);
+    let estatusActualizado = body.estatus;
+    switch (body.estatus) {
+      case '1':
+        estatusActualizado = 'Huesped en Casa';
+        break;
+      case '2':
+        estatusActualizado = 'Reserva Sin Pago';
+        break;
+      case '3':
+        estatusActualizado = 'Reserva Confirmada';
+        break;
+      case '4':
+        estatusActualizado = 'Check-Out';
+        return this.guestModel
+          .updateOne(
+            { folio: body.folio },
+            {
+              $set: {
+                estatus: estatusActualizado,
+                pendiente: body.huesped.pendiente,
+                porPagar: body.huesped.porPagar,
+                noches: body.huesped.noches,
+                hotel: hotel,
+              },
+            },
+          )
+          .then((data) => {
+            if (!data) {
+              console.log(data);
+              return;
+            }
+            if (data) {
+              console.log(data);
+              return data;
+            }
+          })
+          .catch((err) => {
+            return err;
+          });
+        break;
+      case '5':
+        estatusActualizado = 'Uso Interno';
+        break;
+      case '6':
+        estatusActualizado = 'Bloqueo / Sin Llegadas';
+        break;
+      case '7':
+        estatusActualizado = 'Reserva Temporal';
+        break;
+      case '8':
+        estatusActualizado = 'Esperando Deposito';
+        break;
+      case '9':
+        estatusActualizado = 'Deposito Realizado';
+        break;
+      case '10':
+        estatusActualizado = 'Totalmente Pagada';
+        break;
+      case '11':
+        estatusActualizado = 'No Show';
+        break;
+      case '12':
+        estatusActualizado = 'Reserva Cancelada';
+        break;
+    }
+    console.log('folio', body.folio);
+    console.log('hotel', hotel);
+    console.log('estatusActualizado', estatusActualizado);
+    return this.guestModel
+      .updateOne(
+        { folio: body.huesped.folio, hotel: hotel },
+        { $set: { estatus: estatusActualizado } },
+      )
+      .then((data) => {
+        if (data.modifiedCount > 0) {
+          console.log('Update successful:', data);
+          return data;
+        } else {
+          console.log('No document was updated:', data);
+          return;
+        }
+      })
+      .catch((err) => {
+        console.error('Update failed:', err);
+        throw err; // Re-throw the error to handle it further up the chain if needed
       });
   }
 }

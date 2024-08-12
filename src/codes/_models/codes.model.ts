@@ -1,4 +1,4 @@
-import { SchemaFactory, Schema, Prop, } from '@nestjs/mongoose';
+import { SchemaFactory, Schema, Prop } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 
 export type CodesDocument = mongoose.HydratedDocument<code>; //<name of collection in Mongo>
@@ -21,45 +21,44 @@ export const CodesSchema = SchemaFactory.createForClass(code);
 
 export type EstatusDocument = mongoose.HydratedDocument<estatus>;
 
-@Schema({collection:'Estatus'})
+@Schema({ collection: 'Estatus' })
 export class estatus {
   @Prop()
-  id:number;
+  id: number;
   @Prop()
-  color:string;
+  color: string;
   @Prop()
-  hotel:string;
+  hotel: string;
   @Prop()
-  estatus:string;
+  estatus: string;
 }
 
-export const EstatusSchema = SchemaFactory.createForClass(estatus)
+export const EstatusSchema = SchemaFactory.createForClass(estatus);
 
 export type FoliadorDocument = mongoose.HydratedDocument<Foliador>; //<name of collection in Mongo>
 
-@Schema({collection:'Foliador'})
+@Schema({ collection: 'Foliador' })
 export class Foliador {
   @Prop()
-  _id:string;
+  _id: string;
   @Prop()
-  Folio:string;
+  Folio: string;
   @Prop()
-  Letra:string;
+  Letra: string;
   @Prop()
-  hotel:string;
+  hotel: string;
 }
-export const FoliadorSchema = SchemaFactory.createForClass(Foliador)
+export const FoliadorSchema = SchemaFactory.createForClass(Foliador);
 
 export type AdicionalDocument = mongoose.HydratedDocument<Adicional>;
 
-@Schema({collection:'Servicios_Adicionales'})
+@Schema({ collection: 'Servicios_Adicionales' })
 export class Adicional {
   @Prop()
-  Descripcion:string;
+  Descripcion: string;
   @Prop()
-  Adicional:string;
+  Adicional: string;
   @Prop()
-  hotel:string;
+  hotel: string;
 }
-export const AdicionalSchema = SchemaFactory.createForClass(Adicional)
-
+export const AdicionalSchema = SchemaFactory.createForClass(Adicional);

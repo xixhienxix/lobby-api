@@ -12,7 +12,7 @@ export class room {
   @Prop()
   Descripcion: string;
   @Prop()
-  Estatus: number;
+  Estatus: string;
   @Prop()
   Camas: number;
   @Prop()

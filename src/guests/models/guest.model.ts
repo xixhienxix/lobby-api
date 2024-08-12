@@ -6,11 +6,11 @@ export type GuestDocument = mongoose.HydratedDocument<huespeds>; //<name of coll
 @Schema({ collection: 'Reservaciones' })
 export class huespeds {
   @Prop()
-  folio:string
+  folio: string;
   @Prop()
-  adultos:number;
+  adultos: number;
   @Prop()
-  ninos:number;
+  ninos: number;
   @Prop()
   nombre: string;
   // apellido: string;
@@ -23,7 +23,7 @@ export class huespeds {
   @Prop()
   noches: number;
   @Prop()
-  tarifa:string;
+  tarifa: string;
   @Prop()
   porPagar: number;
   @Prop()
@@ -33,68 +33,109 @@ export class huespeds {
   @Prop()
   habitacion: string;
   @Prop()
-  telefono:string;
+  telefono: string;
   @Prop()
-  email:string;
+  email: string;
   @Prop()
-  motivo:string;
+  motivo: string;
   //Otros Detalles
   @Prop()
-  fechaNacimiento:string;
+  fechaNacimiento: string;
   @Prop()
-  trabajaEn:string;
+  trabajaEn: string;
   @Prop()
-  tipoDeID:string;
+  tipoDeID: string;
   @Prop()
-  numeroDeID:string;
+  numeroDeID: string;
   @Prop()
-  direccion:string;
+  direccion: string;
   @Prop()
-  pais:string;
+  pais: string;
   @Prop()
-  ciudad:string;
+  ciudad: string;
   @Prop()
-  codigoPostal:string;
+  codigoPostal: string;
   @Prop()
-  lenguaje:string;
+  lenguaje: string;
   @Prop()
-  numeroCuarto:string;
+  numeroCuarto: string;
   @Prop()
-  creada:string;
+  creada: string;
   @Prop()
-  tipoHuesped:string;
+  tipoHuesped: string;
   @Prop()
-  notas:string;
+  notas: string;
   @Prop()
-  vip:string;
+  vip: string;
   @Prop()
-  ID_Socio:number;
+  ID_Socio: number;
   @Prop()
-  estatus_Ama_De_Llaves:string;
+  estatus_Ama_De_Llaves: string;
   @Prop()
   hotel: string;
 }
 
 export const GuestSchema = SchemaFactory.createForClass(huespeds);
 
-
 export type PromesasDocument = mongoose.HydratedDocument<Promesas>; //<name of collection in Mongo>
 
 @Schema({ collection: 'Promesas_Pago' })
 export class Promesas {
   @Prop()
-  Folio:string
+  Folio: string;
   @Prop()
-  Fecha:Date;
+  Fecha: Date;
   @Prop()
-  Cantidad:number;
+  Cantidad: number;
   @Prop()
   Aplicado: boolean;
   @Prop()
-  Estatus:string;
+  Estatus: string;
   @Prop()
   hotel: string;
   // apellido: string;
 }
 
 export const PromesasSchema = SchemaFactory.createForClass(Promesas);
+
+// HUESPED DETAILS
+export type HuespedDetailsDocument = mongoose.HydratedDocument<HuespedDetails>; //<name of collection in Mongo>
+
+@Schema({ collection: 'Detalles_Huesped' })
+export class HuespedDetails {
+  @Prop()
+  ID_Socio: number;
+  @Prop()
+  Nombre: string;
+  @Prop()
+  email: string;
+  @Prop()
+  telefono: string;
+  @Prop()
+  tipoHuesped: string;
+  @Prop()
+  fechaNacimiento: string;
+  @Prop()
+  trabajaEn: string;
+  @Prop()
+  tipoDeID: string;
+  @Prop()
+  numeroDeID: string;
+  @Prop()
+  direccion: string;
+  @Prop()
+  pais: string;
+  @Prop()
+  ciudad: string;
+  @Prop()
+  codigoPostal: string;
+  @Prop()
+  lenguaje: string;
+  @Prop()
+  notas: string;
+  @Prop()
+  hotel: string;
+}
+
+export const HuespedDetailsSchema =
+  SchemaFactory.createForClass(HuespedDetails);

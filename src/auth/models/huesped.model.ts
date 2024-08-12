@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 
 export type HuespedDocument = mongoose.HydratedDocument<huesped>; //<name of collection in Mongo>
 
-@Schema()
+@Schema({ collection: 'Reservaciones' })
 export class huesped {
   @Prop()
   _id: string;
