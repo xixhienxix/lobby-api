@@ -46,7 +46,14 @@ export class AccountingController {
     return this._AccountingService.updatePaymentStatus(hotel, body);
   }
 
-  @Get('/edo_cuenta/cuentas')
+  @Put('/edo_cuenta/update/concepto')
+  @UseGuards(RolesUserGuard)
+  updateHospedaje(@Req() request: Request, @Body() body) {
+    const hotel = request.headers['hotel'];
+    return this._AccountingService.updateHospedaje(hotel, body);
+  }
+
+  @Get('/ingresos/totales')
   @UseGuards(RolesUserGuard)
   async getAllAccounts(@Req() request: Request): Promise<any> {
     const hotel = request.headers['hotel'];

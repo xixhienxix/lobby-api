@@ -25,6 +25,10 @@ export class Parametros {
   hotel: string;
   @Prop()
   tarifasCancelacion: string;
+  @Prop()
+  autoCheckOut: boolean;
+  @Prop()
+  noShowAutoUpdated: boolean;
 }
 
 export const ParametrosSchema = SchemaFactory.createForClass(Parametros);

@@ -20,7 +20,7 @@
   },
   "include": [
     "src",
-    "global.d.ts",
+    "global.d.ts", "updateVersion.js",
   ],
 "exclude": [
     "node_modules",

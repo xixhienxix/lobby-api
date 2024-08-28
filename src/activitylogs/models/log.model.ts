@@ -11,10 +11,20 @@ export class Log {
   timestamp: string;
   @Prop()
   message: string;
+  @Prop({ type: Object })
+  propertiesChanged: string;
+  @Prop({ type: Object })
+  payment: string;
   @Prop()
   username: string;
   @Prop()
   hotel: string;
+  @Prop()
+  oldStatus?: string;
+  @Prop()
+  newStatus?: string;
+  @Prop()
+  logType?: number;
 }
 
 export const LogSchema = SchemaFactory.createForClass(Log);

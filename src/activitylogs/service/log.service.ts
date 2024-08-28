@@ -7,20 +7,19 @@ import { Model } from 'mongoose';
 export class LogService {
   constructor(@InjectModel('Log') private logModel: Model<Log>) {}
 
-  async getLogsByUser(hotel: string) {
+  async getLogsByUser(hotel: string, username: string) {
     try {
       return this.logModel
-        .find({ hotel: hotel })
+        .find({ hotel: hotel, username })
         .then((data) => {
           if (!data) {
-            return;
+            return [];
           }
-          if (data) {
-            return data;
-          }
+          return data;
         })
         .catch((err) => {
-          return err;
+          console.error('Error fetching logs:', err);
+          throw err;
         });
     } catch (err) {
       console.error('Error fetching logs:', err);
@@ -31,26 +30,13 @@ export class LogService {
   async postLogs(hotel: string, body: any) {
     console.log('Hotel', hotel);
     body.logEntry.hotel = hotel;
-    // const model = {
-    //   hotel: hotel,
-    //   timestamp: body.logEntry.timestamp,
-    //   message: body.logEntry.message,
-    //   username: body.logEntry.username,
-    //   folio: body.logEntry.folio,
-    // };
-    await this.logModel
-      .create(body.logEntry)
-      .then((data) => {
-        if (!data) {
-          return;
-        }
-        if (data) {
-          console.log('POST activity', data);
-          return data;
-        }
-      })
-      .catch((err) => {
-        return err;
-      });
+    try {
+      const data = await this.logModel.create(body.logEntry);
+      console.log('POST activity', data);
+      return data;
+    } catch (err) {
+      console.error('Error creating log entry', err);
+      throw err;
+    }
   }
 }

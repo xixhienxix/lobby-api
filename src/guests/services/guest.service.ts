@@ -93,6 +93,27 @@ export class GuestService {
       });
   }
 
+  async onModificaHuesped(hotel: string, data: any): Promise<huespeds[]> {
+    const huespedModificado = data.data[0];
+
+    try {
+      const updatedHuesped = await this.guestModel.findOneAndUpdate(
+        { folio: huespedModificado.folio, hotel: hotel },
+        {
+          $set: {
+            ...huespedModificado,
+          },
+        },
+        { new: true }, // This option ensures the modified document is returned
+      );
+
+      return updatedHuesped ? [updatedHuesped] : [];
+    } catch (err) {
+      console.error(err);
+      throw new Error('Error updating the guest');
+    }
+  }
+
   async getDisponibilidad(hotel: string, params: any): Promise<any> {
     const busqueda = params.params;
     const sinDisponibilidad = [];
@@ -101,6 +122,7 @@ export class GuestService {
     const dispoquery = this.guestModel
       .find({
         hotel: hotel,
+        // salida: { $ne: busqueda.initialDate },  Excluir casos donde salida sea igual a initialDate
         $or: [
           // Caso 1: La fecha de llegada de la reservación está dentro del rango proporcionado
           {
@@ -144,51 +166,54 @@ export class GuestService {
 
   async postReservation(hotel: string, body: any): Promise<any> {
     const huespedArr = body.huespedInfo;
+    const addedDocuments: any[] = [];
 
-    huespedArr.forEach((element, index) => {
+    const updatePromises = huespedArr.map(async (element, index) => {
       const folio = element.folio.replace(/\D/g, '');
       const folioIncreses = parseInt(folio) + index;
       element.folio = element.folio.split(/\d+/)[0] + folioIncreses;
 
       const huesped = { ...element, hotel };
-      this.guestModel
-        .create(huesped)
-        .then((data) => {
-          console.log('data returned from update qery:', data);
-          if (!data) {
-            return {
-              message: 'No se pudo actualizar los datos intente mas tarde',
-            };
-          }
-          if (data) {
-            return { message: 'Habitacion actualizada con exito' };
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          return err;
-        });
+
+      try {
+        const data = await this.guestModel.create(huesped);
+        console.log('data returned from update query:', data);
+        if (!data) {
+          return {
+            message: 'No se pudo actualizar los datos intente mas tarde',
+          };
+        }
+        addedDocuments.push(data); // Collect the added document
+        return { message: 'Habitacion actualizada con exito' };
+      } catch (err) {
+        console.log(err);
+        return err;
+      }
     });
 
+    // Wait for all guest updates to complete
+    await Promise.all(updatePromises);
+
+    // Update the foliadorModel
     const folio = huespedArr[0].folio.replace(/\D/g, '');
     const folioIncreses = parseInt(folio) + huespedArr.length;
     const letraFolio = huespedArr[0].folio.split(/\d+/)[0];
     const filter = { hotel: hotel, Letra: letraFolio };
     const update = { Folio: folioIncreses };
 
-    this.foliadorModel
-      .findOneAndUpdate(filter, update)
-      .then((data) => {
-        if (!data) {
-          return;
-        }
-        if (data) {
-          return data;
-        }
-      })
-      .catch((err) => {
-        return err;
-      });
+    try {
+      const data = await this.foliadorModel.findOneAndUpdate(filter, update);
+      if (!data) {
+        return {
+          message: 'No se pudo actualizar los datos intente mas tarde',
+          addedDocuments,
+        };
+      }
+      return { message: 'Folio actualizado con exito', addedDocuments };
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
   }
 
   // Huesped

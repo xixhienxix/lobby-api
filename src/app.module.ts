@@ -18,10 +18,12 @@ import { ParametrosModule } from './parametros/parametros.module';
 import { PromesasModule } from './promesas/promesas.module';
 import { AccountingModule } from './accounting/accounting.module';
 import { LogModule } from './activitylogs/logs.module';
+import { BloqueosModule } from './bloqueos/bloqueos.module';
 
 @Module({
   imports: [
     AuthModule,
+    BloqueosModule,
     RoomsModule,
     CodesModule,
     DivisasModule,

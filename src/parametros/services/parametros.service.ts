@@ -27,18 +27,20 @@ export class ParametrosService {
 
   async postParametros(hotel: string, body: any) {
     const filter = { hotel: hotel };
-    await this.parametrosModel
-      .updateOne(filter, body.parametros, { upsert: true })
-      .then((data) => {
-        if (!data) {
-          return;
-        }
-        if (data) {
-          return data;
-        }
-      })
-      .catch((err) => {
-        return err;
-      });
+    body.parametros.hotel = hotel;
+    try {
+      // Delete the existing document that matches the filter
+      await this.parametrosModel.deleteOne(filter);
+
+      // Create a new document with the provided body.parametros
+      const newParametros = new this.parametrosModel(body.parametros);
+      const data = await newParametros.save();
+
+      console.log(data); // Log the newly created document
+      return data;
+    } catch (err) {
+      console.log(err); // Log any errors that occur
+      return err;
+    }
   }
 }

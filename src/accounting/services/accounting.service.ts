@@ -26,41 +26,49 @@ export class AccountingService {
       });
   }
 
-  async addPayment(hotel: string, body: any): Promise<Edo_Cuenta[]> {
+  async addPayment(hotel: string, body: any): Promise<Edo_Cuenta | null> {
     body.edoCuenta.hotel = hotel;
-    return await this.accountingModel
-      .create(body.edoCuenta)
-      .then((data) => {
-        if (!data) {
-          return;
-        }
-        if (data) {
-          return data;
-        }
-      })
-      .catch((err) => {
-        return err;
-      });
+
+    try {
+      // Check if an entry with the same Folio already exists
+      const existingEntry = await this.accountingModel
+        .findOne({ Folio: body.edoCuenta.Folio })
+        .exec();
+
+      if (existingEntry) {
+        // Return null or handle the case where the entry already exists
+        console.log('Entry with the same Folio already exists.');
+        return null;
+      }
+
+      // Create a new entry if it doesn't already exist
+      const newEntry = await this.accountingModel.create(body.edoCuenta);
+      return newEntry;
+    } catch (err) {
+      console.error('Error adding payment:', err);
+      throw err; // Optionally rethrow the error if you want to handle it further up
+    }
   }
 
   async addHospedaje(hotel: string, body: any): Promise<Edo_Cuenta[]> {
     const insertedDocumentArray = [];
+    body.edoCuenta[0].hotel = hotel;
 
-    body.edoCuenta.map(async (item: Edo_Cuenta) => {
-      const result = await this.accountingModel.create(item).catch((err) => {
+    const result = await this.accountingModel
+      .create(body.edoCuenta[0])
+      .catch((err) => {
         console.log('Inserting Accounting Error: ', err);
         return err;
       });
-      const insertedDocument = await this.accountingModel
-        .findOne({
-          _id: result.insertedId,
-        })
-        .catch((err) => {
-          console.log('Serched Inserted Item', err);
-          return err;
-        });
-      insertedDocumentArray.push(insertedDocument);
-    });
+    const insertedDocument = await this.accountingModel
+      .findOne({
+        _id: result.insertedId,
+      })
+      .catch((err) => {
+        console.log('Serched Inserted Item', err);
+        return err;
+      });
+    insertedDocumentArray.push(insertedDocument);
     return insertedDocumentArray;
   }
 
@@ -92,20 +100,53 @@ export class AccountingService {
       });
   }
 
+  async updateHospedaje(hotel: string, body: any): Promise<Edo_Cuenta[]> {
+    console.log('updateHospedaje body: ', body);
+
+    try {
+      // Convert Fecha to Date if it's a string
+      const updateData = {
+        ...body.edoCuenta,
+        Fecha: new Date(body.edoCuenta.Fecha),
+      };
+
+      const updatedEdoCuenta = await this.accountingModel.findOneAndUpdate(
+        {
+          Folio: body.folio,
+          hotel: hotel,
+        },
+        {
+          $set: {
+            Folio: updateData.Folio,
+            Fecha: updateData.Fecha,
+            Descripcion: updateData.Descripcion,
+            Cargo: updateData.Cargo,
+            Abono: updateData.Abono,
+            Total: updateData.Total,
+          },
+        },
+        { new: true }, // This option returns the updated document
+      );
+
+      console.log('Updated document:', updatedEdoCuenta);
+
+      return updatedEdoCuenta ? [updatedEdoCuenta] : [];
+    } catch (err) {
+      console.error('Error updating the payment:', err);
+      throw new Error('Error updating the payment');
+    }
+  }
+
   async getAllAccounts(hotel: string): Promise<Edo_Cuenta[]> {
-    return this.accountingModel
-      .find({ hotel: hotel })
-      .then((data) => {
-        if (!data) {
-          return;
-        }
-        if (data) {
-          return data;
-        }
-      })
-      .catch((err) => {
-        return err;
-      });
+    console.log('HOTEL', { hotel });
+
+    try {
+      const data = await this.accountingModel.find({ hotel }).exec(); // Use exec() for a promise-based approach
+      return data || []; // Return an empty array if no data is found
+    } catch (err) {
+      console.error('Error fetching accounts:', err);
+      throw err; // Rethrow the error for further handling if needed
+    }
   }
 
   async updateBalance(hotel: string, body: any): Promise<Edo_Cuenta[]> {

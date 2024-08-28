@@ -44,6 +44,13 @@ export class GuestsController {
     return this._GuestService.onReservationResize(hotel, body);
   }
 
+  @Post('/reserva/modifica/huesped')
+  @UseGuards(RolesUserGuard)
+  async onModificaHuesped(@Body() body, @Req() request: Request) {
+    const hotel = request.headers['hotel'];
+    return this._GuestService.onModificaHuesped(hotel, body);
+  }
+
   @Post('/reportes/actualiza/huesped')
   @UseGuards(RolesUserGuard)
   async updateHuesped(@Body() body, @Req() request: Request) {

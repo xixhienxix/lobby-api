@@ -14,9 +14,9 @@ export class ParametrosController {
     return this._parametrosService.getAll(hotel);
   }
 
-  @Post('/parametros')
+  @Post('/parametros/save')
   @UseGuards(RolesUserGuard)
-  async postReservaton(@Body() body, @Req() request: Request) {
+  async postParametros(@Body() body, @Req() request: Request) {
     const hotel = request.headers['hotel'];
     return this._parametrosService.postParametros(hotel, body);
   }

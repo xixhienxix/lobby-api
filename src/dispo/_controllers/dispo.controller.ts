@@ -10,12 +10,6 @@ export class DispoController {
     return this._disponibilidadService.getDisponibilidadBooking(params);
   }
 
-  @Post('/reportes/disponibilidad')
-  findAvaibility(@Body() body, @Req() request: Request) {
-    const hotel = request.headers['hotel'];
-    return this._disponibilidadService.getAvailavility(hotel, body);
-  }
-
   @Post('/disponibilidad/booking')
   postDisponibilidad(@Body() body) {
     return this._disponibilidadService.postDisponibilidadBooking(body);
