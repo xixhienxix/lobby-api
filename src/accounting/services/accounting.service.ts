@@ -30,16 +30,16 @@ export class AccountingService {
     body.edoCuenta.hotel = hotel;
 
     try {
-      // Check if an entry with the same Folio already exists
-      const existingEntry = await this.accountingModel
-        .findOne({ Folio: body.edoCuenta.Folio })
-        .exec();
+      //Check if an entry with the same Folio already exists
+      // const existingEntry = await this.accountingModel
+      //   .findOne({ id: body.edoCuenta.id })
+      //   .exec();
 
-      if (existingEntry) {
-        // Return null or handle the case where the entry already exists
-        console.log('Entry with the same Folio already exists.');
-        return null;
-      }
+      // if (existingEntry) {
+      //   // Return null or handle the case where the entry already exists
+      //   console.log('Entry with the same Folio already exists.');
+      //   return null;
+      // }
 
       // Create a new entry if it doesn't already exist
       const newEntry = await this.accountingModel.create(body.edoCuenta);
