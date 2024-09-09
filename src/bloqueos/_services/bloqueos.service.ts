@@ -34,6 +34,25 @@ export class BloqueosService {
     };
 
     try {
+      // Check for existing documents with identical properties
+      const existingBloqueo = await this.bloqueosModel.findOne({
+        Habitacion: bloqueo.Habitacion,
+        Cuarto: bloqueo.Cuarto,
+        Desde: bloqueo.Desde,
+        Hasta: bloqueo.Hasta,
+        Estatus: bloqueo.Estatus,
+        Comentarios: bloqueo.Comentarios,
+        hotel: bloqueo.hotel,
+      });
+
+      if (existingBloqueo) {
+        return {
+          message: 'El bloqueo ya existe en la colección',
+          document: existingBloqueo,
+        };
+      }
+
+      // If no existing document, create the new one
       const data = await this.bloqueosModel.create(bloqueo);
 
       if (!data) {

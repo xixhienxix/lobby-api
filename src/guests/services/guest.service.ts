@@ -3,6 +3,23 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { HuespedDetails, Promesas, huespeds } from '../models/guest.model';
 import { estatus, Foliador } from 'src/codes/_models/codes.model';
+import { Bloqueos } from 'src/bloqueos/_models/bloqueos.model';
+
+const reservationStatusMap: { [key: number]: string[] } = {
+  1: ['Huesped en Casa', 'Walk-In', 'Reserva en Casa'],
+  2: [
+    'Reserva Sin Pago',
+    'Reserva Confirmada',
+    'Deposito Realizado',
+    'Esperando Deposito',
+    'Totalmente Pagada',
+  ],
+  4: ['Hizo Checkout', 'Check-Out'],
+  5: ['Uso Interno'],
+  6: ['Bloqueo'],
+  7: ['Reserva Temporal'],
+  8: ['No Show', 'Reserva Cancelada'],
+};
 @Injectable()
 export class GuestService {
   constructor(
@@ -10,6 +27,7 @@ export class GuestService {
     @InjectModel('Foliador') private readonly foliadorModel: Model<Foliador>,
     @InjectModel('Promesas') private readonly promesasModel: Model<Promesas>,
     @InjectModel('Estatus') private readonly estatusModel: Model<estatus>,
+    @InjectModel('Bloqueos') private readonly bloqueosModel: Model<Bloqueos>, // Ensure the name matches
     @InjectModel('Detalles_Huesped')
     private readonly huespedDetailsModel: Model<HuespedDetails>,
   ) {}
@@ -122,23 +140,22 @@ export class GuestService {
     const dispoquery = this.guestModel
       .find({
         hotel: hotel,
-        // salida: { $ne: busqueda.initialDate },  Excluir casos donde salida sea igual a initialDate
         $or: [
-          // Caso 1: La fecha de llegada de la reservación está dentro del rango proporcionado
+          // Case 1: The arrival date of the reservation is within the provided range
           {
             llegada: {
               $gte: busqueda.initialDate,
               $lt: busqueda.endDate,
             },
           },
-          // Caso 2: La fecha de salida de la reservación está dentro del rango proporcionado
+          // Case 2: The departure date of the reservation is within the provided range
           {
             salida: {
               $gt: busqueda.initialDate,
               $lte: busqueda.endDate,
             },
           },
-          // Caso 3: La reservación abarca completamente el rango proporcionado
+          // Case 3: The reservation completely encompasses the provided range
           {
             llegada: {
               $lt: busqueda.initialDate,
@@ -148,18 +165,72 @@ export class GuestService {
             },
           },
         ],
+        // Include only the relevant reservation statuses
+        estatus: {
+          $in: [
+            ...reservationStatusMap[1],
+            ...reservationStatusMap[2],
+            ...reservationStatusMap[5],
+            ...reservationStatusMap[6],
+            ...reservationStatusMap[7],
+          ],
+          $nin: [...reservationStatusMap[4], ...reservationStatusMap[8]],
+        },
       })
       .catch((err) => {
         return err;
       });
 
+    const bloqueosQuery = this.bloqueosModel
+      .find({
+        hotel: hotel,
+        $and: [
+          {
+            Desde: {
+              $lte: new Date(busqueda.initialDate),
+            },
+          },
+          {
+            $or: [
+              {
+                Hasta: {
+                  $gte: new Date(busqueda.endDate),
+                },
+              },
+              {
+                Hasta: {
+                  $lte: new Date(busqueda.initialDate),
+                },
+              },
+            ],
+          },
+          {
+            $or: [
+              {
+                'Estatus.sinLlegadas': true,
+              },
+              {
+                'Estatus.fueraDeServicio': true,
+              },
+            ],
+          },
+        ],
+      })
+      .exec();
+
     const disponibilidad = await dispoquery.then((doc: any) => {
-      console.log('dispoAntes:', doc);
       for (let i = 0; i < doc.length; i++) {
         sinDisponibilidad.push(doc[i]._doc.numeroCuarto);
       }
       return sinDisponibilidad;
     });
+
+    const bloqueosDocs = await bloqueosQuery;
+    for (const doc2 of bloqueosDocs) {
+      if (doc2.Cuarto && Array.isArray(doc2.Cuarto)) {
+        sinDisponibilidad.push(...doc2.Cuarto); // Add all Cuarto values to the list
+      }
+    }
 
     return disponibilidad;
   }
@@ -168,10 +239,38 @@ export class GuestService {
     const huespedArr = body.huespedInfo;
     const addedDocuments: any[] = [];
 
+    if (!huespedArr || huespedArr.length === 0) {
+      return { message: 'No hay información de huespedes para procesar' };
+    }
+
+    // Get the initial folio details from Foliador
+    const letraFolio = huespedArr[0].folio.split(/\d+/)[0];
+    const filter = { hotel: hotel, Letra: letraFolio };
+    let foliador;
+
+    try {
+      foliador = await this.foliadorModel.findOne(filter);
+      if (!foliador) {
+        return {
+          message:
+            'Foliador no encontrado para el hotel y letra proporcionados',
+        };
+      }
+    } catch (err) {
+      console.log('Error fetching foliador:', err);
+      return {
+        message: 'Error al obtener información de foliador',
+        error: err,
+      };
+    }
+
+    const startingFolioNumber = parseInt(foliador.Folio.replace(/\D/g, ''));
+    let updatedFolioNumber = startingFolioNumber;
+
+    // Map through the huespedArr to update folios and save documents
     const updatePromises = huespedArr.map(async (element, index) => {
-      const folio = element.folio.replace(/\D/g, '');
-      const folioIncreses = parseInt(folio) + index;
-      element.folio = element.folio.split(/\d+/)[0] + folioIncreses;
+      updatedFolioNumber += 1; // Increment folio number
+      element.folio = `${letraFolio}${updatedFolioNumber}`; // Update folio with the new number
 
       const huesped = { ...element, hotel };
 
@@ -179,40 +278,36 @@ export class GuestService {
         const data = await this.guestModel.create(huesped);
         console.log('data returned from update query:', data);
         if (!data) {
-          return {
-            message: 'No se pudo actualizar los datos intente mas tarde',
-          };
+          return { message: 'No se pudo crear la reserva, intente mas tarde' };
         }
-        addedDocuments.push(data); // Collect the added document
-        return { message: 'Habitacion actualizada con exito' };
+        addedDocuments.push(data);
+        return { message: 'Habitación creada con éxito' };
       } catch (err) {
-        console.log(err);
-        return err;
+        console.log('Error creating guest:', err);
+        return { message: 'Error al crear la reserva', error: err };
       }
     });
 
-    // Wait for all guest updates to complete
+    // Wait for all guest creation operations to complete
     await Promise.all(updatePromises);
 
-    // Update the foliadorModel
-    const folio = huespedArr[0].folio.replace(/\D/g, '');
-    const folioIncreses = parseInt(folio) + huespedArr.length;
-    const letraFolio = huespedArr[0].folio.split(/\d+/)[0];
-    const filter = { hotel: hotel, Letra: letraFolio };
-    const update = { Folio: folioIncreses };
+    // Update the Foliador with the new folio number after all guests have been created
+    const update = { Folio: updatedFolioNumber.toString() };
 
     try {
-      const data = await this.foliadorModel.findOneAndUpdate(filter, update);
+      const data = await this.foliadorModel.findOneAndUpdate(filter, update, {
+        new: true,
+      });
       if (!data) {
         return {
-          message: 'No se pudo actualizar los datos intente mas tarde',
+          message: 'No se pudo actualizar el folio, intente mas tarde',
           addedDocuments,
         };
       }
-      return { message: 'Folio actualizado con exito', addedDocuments };
+      return { message: 'Folio actualizado con éxito', addedDocuments };
     } catch (err) {
-      console.log(err);
-      return err;
+      console.log('Error updating foliador:', err);
+      return { message: 'Error al actualizar el folio', error: err };
     }
   }
 

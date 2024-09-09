@@ -10,9 +10,9 @@ export class Bloqueos {
   @Prop({ type: Object })
   Cuarto: any;
   @Prop()
-  Desde: string;
+  Desde: Date;
   @Prop()
-  Hasta: string;
+  Hasta: Date;
   @Prop({ type: Object })
   Estatus: any;
   @Prop()
