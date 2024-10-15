@@ -181,37 +181,42 @@ export class GuestService {
         return err;
       });
 
+    const ini = new Date(busqueda.initialDate);
+    const end = new Date(busqueda.endDate);
+
+    console.log('---------------------->>>', busqueda.initialDate);
+    console.log('---------------------->>>', busqueda.endDate);
+    console.log('---------------------->>>', ini);
+    console.log('---------------------->>>', end);
+
     const bloqueosQuery = this.bloqueosModel
       .find({
-        hotel: hotel,
+        hotel: 'Hotel Pokemon',
         $and: [
           {
-            Desde: {
-              $lte: new Date(busqueda.initialDate),
-            },
-          },
-          {
+            // Checa si hay un solapamiento o si la salida del huésped es igual al "Hasta"
             $or: [
               {
+                Desde: {
+                  $lte: new Date(busqueda.endDate),
+                },
                 Hasta: {
-                  $gte: new Date(busqueda.endDate),
+                  $gte: new Date(busqueda.initialDate),
                 },
               },
               {
+                // Nueva regla: la salida del huésped es igual a la fecha Hasta de la reserva
                 Hasta: {
-                  $lte: new Date(busqueda.initialDate),
+                  $eq: new Date(busqueda.endDate),
                 },
               },
             ],
           },
           {
+            // Valida que uno de estos campos sea true
             $or: [
-              {
-                'Estatus.sinLlegadas': true,
-              },
-              {
-                'Estatus.fueraDeServicio': true,
-              },
+              { 'Estatus.sinLlegadas': true },
+              { 'Estatus.fueraDeServicio': true },
             ],
           },
         ],

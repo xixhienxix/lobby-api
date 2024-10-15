@@ -86,17 +86,14 @@ export class TarifasService {
   }
 
   async updateTarifaBase(body): Promise<tarifas> {
-    const update = body.tarifas;
-
     return this.tarifasModel
       .findOneAndUpdate(
         {
-          _id: body.tarifas._id,
-          // hotel: hotel,
-          // Tarifa: body.tarifas.Tarifa,
-          // Habitacion: body.tarifas.Habitacion,
+          Habitacion: { $in: [body.tarifas.Habitacion] },
         },
-        update,
+        {
+          TarifaRack: body.tarifas.TarifaRack,
+        },
         { upsert: true, setDefaultsOnInsert: true, new: true },
       )
       .then((data) => {

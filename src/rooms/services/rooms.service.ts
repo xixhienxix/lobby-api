@@ -46,25 +46,44 @@ export class RoomsService {
   }
 
   async postRoom(hotel: string, body: any): Promise<any> {
-    const filter = { Codigo: body.habitacion.Codigo };
+    // const filter = { Codigo: body.habitacion.Codigo };
+    const filterEdit = {
+      Codigo: body.habitacion.Codigo,
+      Numero: body.habitacion.Numero,
+    };
     const update = body.habitacion;
 
     if (body.editar === true) {
-      return this.habModel
-        .findOneAndUpdate(filter, update)
-        .then((data) => {
-          console.log('data returned from update qery:', data);
-          if (!data) {
+      this.habModel
+        .findOne(filterEdit)
+        .then((document) => {
+          if (!document) {
+            throw new Error('No document found with Codigo: 101');
+          }
+
+          const id = document._id; // Retrieve the _id from the found document
+
+          // Remove _id from the update object to avoid the CastError
+          const { _id, ...updatedData } = update;
+
+          // Perform the update using the retrieved _id
+          return this.habModel.findByIdAndUpdate(id, updatedData, {
+            new: true,
+          });
+        })
+        .then((updatedDocument) => {
+          if (!updatedDocument) {
+            console.log('No se pudo actualizar los datos, intente más tarde');
             return {
-              message: 'No se pudo actualizar los datos intente mas tarde',
+              message: 'No se pudo actualizar los datos, intente más tarde',
             };
           }
-          if (data) {
-            return { message: 'Habitacion actualizada con exito' };
-          }
+
+          console.log('Habitación actualizada con éxito');
+          return { message: 'Habitación actualizada con éxito' };
         })
         .catch((err) => {
-          console.log(err);
+          console.log('Error during update:', err);
           return err;
         });
     } else {
@@ -74,7 +93,7 @@ export class RoomsService {
         await this.habModel
           .create({
             Codigo: body.habitacion.Codigo,
-            Numero: body.habitacion.Numero[i].nombreHabs,
+            Numero: body.habitacion.Numero[i],
             Descripcion: body.habitacion.Descripcion,
             Tipo: body.habitacion.Tipo,
             Adultos: body.habitacion.Adultos,
