@@ -553,9 +553,7 @@ export class GuestService {
         estatusActualizado = 'Reserva Cancelada';
         break;
     }
-    console.log('folio', body.folio);
-    console.log('hotel', hotel);
-    console.log('estatusActualizado', estatusActualizado);
+
     return this.guestModel
       .updateOne(
         { folio: body.huesped.folio, hotel: hotel },

@@ -5,7 +5,7 @@ import * as path from 'path';
 @Injectable()
 export class AppService {
   private version: string;
-  private timestamp: string;
+  private timestamp: Date;
 
   constructor() {
     this.loadVersion();
@@ -18,7 +18,7 @@ export class AppService {
       const versionParts = packageJson.version.split('-');
 
       this.version = versionParts[0]; // The version without the timestamp
-      this.timestamp = versionParts[1]; // The timestamp part in ISO format
+      this.timestamp = new Date(); // The timestamp part in ISO format
     } catch (error) {
       console.error('Failed to load version from package.json:', error);
     }
