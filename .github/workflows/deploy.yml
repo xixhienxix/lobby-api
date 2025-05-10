@@ -1,0 +1,38 @@
+name: Deploy API
+
+on:
+  push:
+    branches:
+      - master  # Trigger on pushes to the main branch
+
+jobs:
+  deploy:
+    runs-on: api-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.17.1'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Authenticate to Firebase
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: |
+          echo "$GOOGLE_APPLICATION_CREDENTIALS" > firebase-key.json
+          firebase use --add  # Adds the Firebase project to the config
+          firebase deploy --only hosting --token "$(cat firebase-key.json)"
+
+      - name: Deploy to Firebase
+        run: firebase deploy --only functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}

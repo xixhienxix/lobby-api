@@ -10,4 +10,8 @@ export class AppController {
   getVersion(): string {
     return this.appService.getVersion();
   }
+  @Get()
+  getHello(): string {
+    return 'Apps Running Correctly';
+  }
 }
